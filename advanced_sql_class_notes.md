@@ -454,6 +454,29 @@ SELECT * FROM ORDER_TOTALS_BY_DATE
 Left-joining to the temporary table and qualifying on the regular expressions for each respective field allows us to apply the discounts to each `CUSTOMER_ORDER` as specified. We have to `SUM()` the `DISCOUNT_RATE` and `GROUP BY` just in case multiple discounts apply to a given order.
 
 ```sql
+SELECT CUSTOMER_ORDER.*,
+DISCOUNT_RATE as DISCOUNT_RATE,
+PRICE * (1 - DISCOUNT_RATE) AS DISCOUNTED_PRICE
+
+FROM CUSTOMER_ORDER
+INNER JOIN CUSTOMER
+ON CUSTOMER_ORDER.CUSTOMER_ID = CUSTOMER.CUSTOMER_ID
+
+INNER JOIN PRODUCT
+ON CUSTOMER_ORDER.PRODUCT_ID = CUSTOMER_ORDER.PRODUCT_ID
+
+LEFT JOIN DISCOUNT
+ON CUSTOMER_ORDER.CUSTOMER_ID REGEXP DISCOUNT.CUSTOMER_ID_REGEX
+AND CUSTOMER_ORDER.PRODUCT_ID REGEXP DISCOUNT.PRODUCT_ID_REGEX
+AND PRODUCT.PRODUCT_GROUP REGEXP DISCOUNT.PRODUCT_GROUP_REGEX
+AND CUSTOMER.STATE REGEXP DISCOUNT.STATE_REGEX
+
+WHERE ORDER_DATE BETWEEN '2017-03-26' AND '2017-03-31'
+```
+
+If you expect records to possibly get multiple discounts, then sum the discounts:
+
+```sql
 
 SELECT CUSTOMER_ORDER_ID,
 CUSTOMER_NAME,
@@ -507,7 +530,7 @@ AND o2.ORDER_DATE = date(o1.ORDER_DATE, '-1 day')
 WHERE o1.ORDER_DATE BETWEEN '2017-03-05' AND '2017-03-11'
 ```
 
-Note if you wan to get the previous quantity ordered for that record's given `CUSTOMER_ID` and `PRODUCT_ID`, even if it wasn't strictly the day before, you can use a subquery instead that qualifies previous dates and orders them descending. Then you can use `LIMIT 1` to grab the most recent at the top.
+Note if you want to get the previous quantity ordered for that record's given `CUSTOMER_ID` and `PRODUCT_ID`, even if it wasn't strictly the day before, you can use a subquery instead that qualifies previous dates and orders them descending. Then you can use `LIMIT 1` to grab the most recent at the top.
 
 
 ```sql
@@ -529,7 +552,7 @@ FROM CUSTOMER_ORDER c1
 
 ## 4.6 Cross Joins
 
-Sometimes it can be helpful to generate a "cartesian product", or every possible combination between two or more data sets using a CROSS JOIN. This is often done to generate a data set that fills in gaps for another data set. Not every calendar date has orders, nor does every order date have an entry for every product, as shown in this query:
+Sometimes it can be helpful to generate a "cartesian product", or every possible combination between two or more data sets using a CROSS JOIN. This is often done to generate a data set that fills in gaps for another query. Not every calendar date has orders, nor does every order date have an entry for every product, as shown in this query:
 
 ```sql
 SELECT ORDER_DATE,
@@ -633,9 +656,9 @@ Since SQLite does not support windowing functions, we are going to use [PostgreS
 
 http://rextester.com/l/postgresql_online_compiler
 
-In the resources for this class, you should a "customer_order.sql" file which can be opened with any text editor. Inside you will see some SQL commands to create and populate the CUSTOMER_ORDER table and then SELECT all the records from it. Copy/Paste the contents to Rextester and the click the "Run it (F8)" button.
+In the resources for this class, you should find a "customer_order.sql" file which can be opened with any text editor. Inside you will see some SQL commands to create and populate a `CUSTOMER_ORDER` table and then SELECT all the records from it. Copy/Paste the contents to Rextester and the click the "Run it (F8)" button.
 
-Notice it will create the table and populate it in the background, and the final SELECT query will execute and display the results. Note that the table is not persisted after the operation finishes, so you will need to precede each SELECT exercise with this table creation and population before your SELECT.
+Notice it will create the table and populate it, and the final SELECT query will execute and display the results. Note that the table is not persisted after the operation finishes, so you will need to precede each SELECT exercise with this table creation and population before your SELECT.
 
 ## 5.1 PARTITION BY
 
@@ -814,13 +837,13 @@ def get_all_customers():
     return list(conn.execute(stmt))
 
 
-print(get_all_customers(3))
+print(get_all_customers())
 ```
 
 ## 6-1C Using SQL with Python
 
 
-If you want to pass parameters to a query, mind to not insert parameters directly so you don't accidentally introduce SQL injectino. Below, we create a helper function that retrieves a customer for a given ID from a database.
+If you want to pass parameters to a query, mind to not insert parameters directly so you don't accidentally introduce SQL injection. Below, we create a helper function that retrieves a customer for a given ID from a database.
 
 
 ```python
