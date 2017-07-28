@@ -41,6 +41,8 @@ QUANTITY,
 FROM CUSTOMER_ORDER c1
 ```
 
+Depending on how they are used, subqueries can be more expensive or less expensive than joins. Subqueries that generate a value for each record tend to me more expensive, like the example above. 
+
 ## 2.2C - Multi-value Subqueries
 
 Sometimes it can be helpful to leverage subqueries that return a set of values, rather than one scalar value. For instance, to query customer orders for customers in TX, we can save ourselves a join and use a subquery to get CUSTOMER_ID's that belong to customers in TX. Then we can leverage that with a WHERE and specify an `IN` condition:
@@ -61,11 +63,9 @@ WHERE CUSTOMER_ID IN (
 )
 ```
 
-Sometimes, subqueries can be more expensive than joins. But sometimes they perform better. It depends on how the tables are index and the implementation of the database engine.
-
 ## 2.3 - Derived Tables
 
-A more efficient way to bring in averages by CUSTOMER_ID and PRODUCT_ID is by deriving a table of these averages, and joining to it
+A more efficient way to bring in averages by CUSTOMER_ID and PRODUCT_ID is by deriving a table of these averages, and joining to it.
 
 ```sql
 SELECT CUSTOMER_ORDER_ID,
@@ -90,7 +90,7 @@ AND CUSTOMER_ORDER.PRODUCT_ID = cust_avgs.PRODUCT_ID
 
 ## 2.4 - Unions
 
-To simply append two queries (with identical column structures) together, put a `UNION ALL` between them.
+To simply append two queries (with identical fields) together, put a `UNION ALL` between them.
 
 ```sql
 SELECT
