@@ -192,7 +192,7 @@ Some characters, as we have seen, have special functionality in a regex. If you 
 [\^$.|?*+()
 ```
 
-So to qualify a U.S. currency amount,you will need to escape the dollar sign `$` and the decimal place `.`
+So to qualify a U.S. currency amount, you will need to escape the dollar sign `$` and the decimal place `.`
 
 ```sql
   SELECT '$181.12' REGEXP '\$[0-9]+\.[0-9]{2}' -- true
@@ -200,7 +200,7 @@ So to qualify a U.S. currency amount,you will need to escape the dollar sign `$`
 
 ## 3.1 - Qualifying Alphabetic and Numeric Ranges
 
-A range is a valid set of values for a single character. For instance `[A-Z]` qualifies one alphabetic value for the range of letters A thru Z, so `[A-Z][A-Z]` would qualify two alphabetic text values. This would match the text string `TX`.
+A range is a valid set of values for a single character. For instance `[A-Z]` qualifies one uppercase alphabetic value for the range of letters A thru Z, so `[A-Z][A-Z]` would qualify two uppercase alphabetic text values. This would match the text string `TX`.
 
 ```sql
 SELECT 'TX' REGEXP '[A-Z][A-Z]' --true
@@ -209,14 +209,14 @@ SELECT 'T2' REGEXP '[A-Z][0-3]' --true
 SELECT 'T9' REGEXP '[A-Z0-9][A-Z0-9]' --true
 ```
 
-`TX` would not match ''[A-Z][A-Z][A-Z]'' though because it is not three characters.
+`TX` would not match `[A-Z][A-Z][A-Z]` though because it is not three characters.
 
 ```sql
 SELECT 'TX' REGEXP '[A-Z][A-Z][A-Z]' --false
 SELECT 'ASU' REGEXP '[A-Z][A-Z][A-Z]' --true
 ```
 
-We can also cherrypick certain characters, and they don't necessarily have to be ranges:
+We can also specify certain characters, and they don't necessarily have to be ranges:
 
 ```sql
 SELECT 'A6' REGEXP '[ATUX][469]' --true
@@ -236,7 +236,7 @@ SELECT 'B8' REGEXP '[^ATUX][^469]' --true
 
 If you don't want partial matches but rather full matches, you have to anchor the beginning and end of the String with `^` and `$` respectively.
 
-For instance, `[A-Z][A-Z]` would qualify with `SMU`. This is because it found two characters within those three characters.
+For instance, `[A-Z][A-Z]` would qualify with `SMU`. This is because it found two alphabetic characters within those three characters.
 
 ```sql
 SELECT 'SMU' REGEXP '[A-Z][A-Z]' --true
@@ -247,10 +247,11 @@ If you don't want that, you will need to qualify start and end anchors, which ef
 ```sql
 SELECT 'SMU' REGEXP '^[A-Z][A-Z]$' --false
 ```
-You can also anchor to just the beginning or end of the string, to check, for instance, if a string starts with a number followed by an alphabetic character:
+
+You can also anchor to just the beginning or end of the string to check, for instance, if a string starts with a number followed by an alphabetic character:
 
 ```sql
-SELECT '9FN' REGEXP '^[0-9][A-Z]' --false
+SELECT '9FN' REGEXP '^[0-9][A-Z]' --true
 SELECT 'RFX' REGEXP '^[0-9][A-Z]' --false
 ```
 
@@ -275,10 +276,10 @@ SELECT 'ASU' REGEXP '^[A-Z]{2,3}$' --true
 SELECT 'TX' REGEXP '^[A-Z]{2,3}$' --true
 ```
 
-Leaving the second argument blank will result in no maximum:
+Leaving the second argument blank will result in only requiring a minimum of repetitions:
 
 ```sql
-SELECT 'ASU' REGEXP '^[A-Z]{2,}$' --true
+SELECT 'A' REGEXP '^[A-Z]{2,}$' --false
 SELECT 'ASDIKJFSKJJNXVNJGTHEWIROQWERKJTX' REGEXP '^[A-Z]{2,}$' --true
 ```
 
@@ -296,7 +297,7 @@ SELECT 'ASDFJSKJ4892KSFJJ2843KJSNBKW' REGEXP '^[A-Z0-9]*' --true
 SELECT '' REGEXP '^[A-Z0-9]*' --true
 ```
 
-To allow 0 or 1 repetitions, follow the item with a `?`. This will allow two characters to be preceded with a number, but it doesn't have to:
+To allow 0 or 1 repetitions (an optional character), follow the item with a `?`. This will allow two characters to be preceded with a number, but it doesn't have to:
 
 ```sql
 SELECT '9FX' REGEXP '^[0-9]?[A-Z]{2}$' --true
@@ -333,8 +334,8 @@ SELECT 'A-3' REGEXP '.*' --true
 You can group up parts of a regular expression using rounded paranthesis `( )`, often to put a repeater on that entire group. For example, we can make the entire decimal part of a dollar amount optional:
 
 ```sql
-SELECT '$181.12' REGEXP '\$[0-9]+(\.[0-9]{2})?' --true
-SELECT '$181' REGEXP '\$[0-9]+(\.[0-9]{2})?' --true
+SELECT '181.12' REGEXP '^[0-9]+(\.[0-9]{2})?$' --true
+SELECT '181' REGEXP '^[0-9]+(\.[0-9]{2})?$' --true
 ``
 
 We can also qualify a string of letters, a slash `/`, and a string of numbers, but qualify any number of repetitions of this entire pattern:
@@ -402,19 +403,14 @@ Total quantity sold of all products, null means no products were sold that day.
 ```sql
 SELECT PRODUCT_ID,
 PRODUCT_NAME,
-TOTAL_QTY
+SUM(QUANTITY) as total_quantity
 
-FROM PRODUCT
+FROM PRODUCT LEFT JOIN CUSTOMER_ORDER
 
-LEFT JOIN (
-    SELECT PRODUCT_ID,
-    SUM(QUANTITY) AS TOTAL_QTY
-    FROM CUSTOMER_ORDER
-    WHERE ORDER_DATE = '2017-03-01'
-    GROUP BY 1
-) totals_by_product
+ON PRODUCT.PRODUCT_ID = CUSTOMER_ORDER.PRODUCT_ID
+AND ORDER_DATE = '2017-03-01'
 
-ON PRODUCT.PRODUCT_ID = totals_by_product.PRODUCT_ID
+GROUP BY 1, 2
 ```
 
 
