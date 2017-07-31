@@ -168,7 +168,38 @@ GROUP BY 1
 
 GROUP_CONCAT is a helpful function to compress the results into a single record, in a single cell, often in a reporting context.
 
-## Exercise
+
+## Exercise 2-2
+
+Bring in all records for `CUSTOMER_ORDER`, but also bring in the minimum and maximum quantities ever ordered each given `PRODUCT_ID` and `CUSTOMER_ID`.
+
+**ANSWER:**
+
+```sql
+SELECT CUSTOMER_ORDER_ID,
+CUSTOMER_ID,
+ORDER_DATE,
+PRODUCT_ID,
+QUANTITY,
+min_qty,
+max_qty
+
+FROM CUSTOMER_ORDER
+INNER JOIN
+(
+    SELECT CUSTOMER_ID,
+    PRODUCT_ID,
+    MIN(QUANTITY) AS min_qty,
+    MAX(QUANTITY) AS max_qty
+    FROM CUSTOMER_ORDER
+    GROUP BY 1, 2
+) min_and_max_ordered
+
+ON CUSTOMER_ORDER.CUSTOMER_ID = min_and_max_ordered.CUSTOMER_ID
+AND CUSTOMER_ORDER.PRODUCT_ID = min_and_max_ordered.PRODUCT_ID
+```
+
+
 # Section III - Regular Expressions
 
 Regular expressions are a powerful tool for qualifying complex text patterns. Their usage extends far outside of SQL and can be found on many technology platforms including Python, R, Java, .NET, LibreOffice, Alteryx, and Tableau.
@@ -636,6 +667,47 @@ AND c1.ORDER_DATE >= c2.ORDER_DATE
 
 GROUP BY 1, 2, 3, 4
 ```
+
+
+## Exercise 4
+
+For every `CALENDAR_DATE` and `CUSTOMER_ID`, show the total `QUANTITY` ordered for the date range of `2017-01-01` to `2017-03-31`:
+
+
+**ANSWER:**
+
+```sql
+SELECT CALENDAR_DATE,
+all_combos.CUSTOMER_ID,
+TOTAL_QTY
+
+FROM
+(
+  SELECT
+  CALENDAR_DATE,
+  CUSTOMER_ID
+  FROM CUSTOMER
+  CROSS JOIN CALENDAR
+  WHERE CALENDAR_DATE BETWEEN '2017-01-01' and '2017-03-31'
+) all_combos
+
+LEFT JOIN
+(
+  SELECT ORDER_DATE,
+  CUSTOMER_ID,
+  SUM(QUANTITY) as TOTAL_QTY
+
+  FROM CUSTOMER_ORDER
+
+  GROUP BY 1, 2
+) totals
+
+ON all_combos.CALENDAR_DATE = totals.ORDER_DATE
+AND all_combos.CUSTOMER_ID = totals.CUSTOMER_ID
+```
+
+
+
 # Section V - Windowing
 
 Windowing functions allow you to greate contextual aggregations in ways much more flexible than GROUP BY. Many major database platforms support windowing functions, including:
@@ -787,12 +859,12 @@ Note you can precede the `ORDER BY` clause with a `DESC` keyword to window in th
 
 # EXERCISE
 
-For the month of March, bring in every order along with the  sum of quantity ordered partitioned by `CUSTOMER_ID` and `PRODUCT_ID`.
+For the month of March, bring in every order along with the sum of quantity ordered for that `CUSTOMER_ID` and `PRODUCT_ID`.
 
 ```sql
 SELECT CUSTOMER_ORDER_ID,
-CUSTOMER_ID,
 ORDER_DATE,
+CUSTOMER_ID,
 PRODUCT_ID,
 QUANTITY,
 SUM(QUANTITY) OVER(PARTITION BY CUSTOMER_ID, PRODUCT_ID) as total_qty_for_customer_and_product
@@ -802,6 +874,8 @@ WHERE ORDER_DATE BETWEEN '2017-03-01' AND '2017-03-31'
 
 ORDER BY CUSTOMER_ORDER_ID
 ```
+
+
 # Section VI - SQL with Python, R, and Java
 
 ## 6.1A Using SQL with Python
