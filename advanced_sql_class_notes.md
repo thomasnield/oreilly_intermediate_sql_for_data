@@ -41,7 +41,7 @@ QUANTITY,
 FROM CUSTOMER_ORDER c1
 ```
 
-Depending on how they are used, subqueries can be more expensive or less expensive than joins. Subqueries that generate a value for each record tend to me more expensive, like the example above. 
+Depending on how they are used, subqueries can be more expensive or less expensive than joins. Subqueries that generate a value for each record tend to me more expensive, like the example above.
 
 ## 2.2C - Multi-value Subqueries
 
@@ -921,6 +921,7 @@ To connect to a database using JDBC and HikariCP, you will need the appropriate 
 dependencies {
   compile 'org.xerial:sqlite-jdbc:3.19.3'
   compile 'com.zaxxer:HikariCP:2.6.3'
+  compile 'org.slf4j:slf4j-simple:1.7.25'
 }
 ```
 
@@ -940,7 +941,7 @@ public class Launcher {
 
         try {
             HikariConfig config = new HikariConfig();
-            config.setJdbcUrl("jdbc:sqlite://home/thomas/Dropbox/Projects/webinars/oreilly_advanced_sql/thunderbird_manufacturing.db");
+            config.setJdbcUrl("jdbc:sqlite:/c:/git/oreilly_advanced_sql_for_data/thunderbird_manufacturing.db");
             config.setMinimumIdle(1);
             config.setMaximumPoolSize(5);
 
@@ -982,7 +983,7 @@ public class Launcher {
 
         try {
             HikariConfig config = new HikariConfig();
-            config.setJdbcUrl("jdbc:sqlite://home/thomas/Dropbox/Projects/webinars/oreilly_advanced_sql/thunderbird_manufacturing.db");
+            config.setJdbcUrl("jdbc:sqlite:/c:/git/oreilly_advanced_sql_for_data/thunderbird_manufacturing.db");
             config.setMinimumIdle(1);
             config.setMaximumPoolSize(5);
 
@@ -1028,7 +1029,7 @@ public class Launcher {
 
         try {
             HikariConfig config = new HikariConfig();
-            config.setJdbcUrl("jdbc:sqlite://home/thomas/Dropbox/Projects/webinars/oreilly_advanced_sql/thunderbird_manufacturing.db");
+            config.setJdbcUrl("jdbc:sqlite:/c:/git/oreilly_advanced_sql_for_data/thunderbird_manufacturing.db");
             config.setMinimumIdle(1);
             config.setMaximumPoolSize(5);
 
