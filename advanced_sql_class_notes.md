@@ -226,7 +226,7 @@ Some characters, as we have seen, have special functionality in a regex. If you 
 So to qualify a U.S. currency amount, you will need to escape the dollar sign `$` and the decimal place `.`
 
 ```sql
-  SELECT '$181.12' REGEXP '\$181\.[0-9]{2}' -- true
+  SELECT '$181.12' REGEXP '\$181\.12' -- true
 ```
 
 ## 3.1 - Qualifying Alphabetic and Numeric Ranges
