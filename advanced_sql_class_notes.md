@@ -447,7 +447,7 @@ GROUP BY 1, 2
 
 ## 4.3 Creating a Volatile Table
 
-Creating a volatile table of discount rules. This table will dispose at the end of each session. It is no different than a standard `CREATE TABLE` statement other than the `TEMP` keyword.
+Herei show to create a volatile/temporary table of discount rules. This table will dispose at the end of each session. It is no different than a standard `CREATE TABLE` statement other than the `TEMP` keyword.
 
 
 ```sql
@@ -465,7 +465,7 @@ INSERT INTO DISCOUNT (PRODUCT_ID_REGEX, CUSTOMER_ID_REGEX, DISCOUNT_RATE) VALUES
 ```
 
 
-Note you can also create a temporary (or permanent) table from a SELECT query. This is helpful to persist expensive query results and reuse it multiple times during a session. SQLite is a bit more convoluted to do this [than other platforms](https://www.techonthenet.com/sql/tables/create_table2.pahp):
+Note you can also create a temporary (or permanent) table from a SELECT query. This is helpful to persist expensive query results and reuse it multiple times during a session. SQLite is a bit more convoluted to do this [than other platforms](https://www.techonthenet.com/sql/tables/create_table2.php):
 
 ```sql
 CREATE TEMP TABLE ORDER_TOTALS_BY_DATE AS
@@ -482,7 +482,7 @@ SELECT * FROM ORDER_TOTALS_BY_DATE
 
 ## 4.4 Joining with Regular Expressions
 
-Left-joining to the temporary table and qualifying on the regular expressions for each respective field allows us to apply the discounts to each `CUSTOMER_ORDER` as specified. We have to `SUM()` the `DISCOUNT_RATE` and `GROUP BY` just in case multiple discounts apply to a given order.
+Left-joining to the temporary table and qualifying on the regular expressions for each respective field allows us to apply the discounts to each `CUSTOMER_ORDER` as specified.
 
 ```sql
 SELECT CUSTOMER_ORDER.*,
@@ -505,7 +505,7 @@ AND CUSTOMER.STATE REGEXP DISCOUNT.STATE_REGEX
 WHERE ORDER_DATE BETWEEN '2017-03-26' AND '2017-03-31'
 ```
 
-If you expect records to possibly get multiple discounts, then sum the discounts:
+If you expect records to possibly get multiple discounts, then sum the discounts and `GROUP BY` everything else:
 
 ```sql
 
