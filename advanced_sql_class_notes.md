@@ -953,7 +953,7 @@ setwd('c:\\my_folder')
 library(DBI)
 library(RSQLite)
 
-db <- dbConnect(SQLite(), dbname='rexon_metals.db')
+db <- dbConnect(SQLite(), dbname='thunderbird_manufacturing.db')
 
 myQuery <- dbSendQuery(db, "SELECT * FROM CUSTOMER")
 
@@ -962,6 +962,9 @@ my_data <- dbFetch(myQuery, n = -1)
 dbClearResult(myQuery)
 
 print(my_data)
+
+remove(myQuery)
+dbDisconnect(db)
 ```
 
 You can get detailed information on how to work with R and SQL in the official DBI documentation:
