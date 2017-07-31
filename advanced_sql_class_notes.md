@@ -226,7 +226,7 @@ Some characters, as we have seen, have special functionality in a regex. If you 
 So to qualify a U.S. currency amount, you will need to escape the dollar sign `$` and the decimal place `.`
 
 ```sql
-  SELECT '$181.12' REGEXP '\$181\.12' -- true
+  SELECT '$181.12' REGEXP '\$181\.[0-9]{2}' -- true
 ```
 
 ## 3.1 - Qualifying Alphabetic and Numeric Ranges
@@ -342,7 +342,7 @@ SELECT 'ASJSDFH-32423522-HUETHNB' REGEXP '^[A-Z]+-[0-9]+-[A-Z]+$' --true
 ```
 
 
-## 3.5 Wildcards
+## 3.4 Wildcards
 
 A dot `.` represents any character, even whitespaces.
 
@@ -360,7 +360,7 @@ SELECT 'A-3' REGEXP '.*' --true
 
 `.*` is a common way to express qualifying any text.
 
-## 3.6 Alternation and Grouping
+## 3.5 Alternation and Grouping
 
 You can group up parts of a regular expression using rounded paranthesis `( )`, often to put a repeater on that entire group. For example, we can make the entire decimal part of a dollar amount optional:
 
@@ -486,7 +486,7 @@ Left-joining to the temporary table and qualifying on the regular expressions fo
 
 ```sql
 SELECT CUSTOMER_ORDER.*,
-DISCOUNT_RATE as DISCOUNT_RATE,
+DISCOUNT_RATE,
 PRICE * (1 - DISCOUNT_RATE) AS DISCOUNTED_PRICE
 
 FROM CUSTOMER_ORDER
@@ -494,7 +494,7 @@ INNER JOIN CUSTOMER
 ON CUSTOMER_ORDER.CUSTOMER_ID = CUSTOMER.CUSTOMER_ID
 
 INNER JOIN PRODUCT
-ON CUSTOMER_ORDER.PRODUCT_ID = CUSTOMER_ORDER.PRODUCT_ID
+ON CUSTOMER_ORDER.PRODUCT_ID = PRODUCT.PRODUCT_ID
 
 LEFT JOIN DISCOUNT
 ON CUSTOMER_ORDER.CUSTOMER_ID REGEXP DISCOUNT.CUSTOMER_ID_REGEX
@@ -577,7 +577,7 @@ QUANTITY,
     AND c1.CUSTOMER_ID = c2.CUSTOMER_ID
     ORDER BY ORDER_DATE DESC
     LIMIT 1
-)
+) as PREV_QTY
 FROM CUSTOMER_ORDER c1
 ```
 
