@@ -800,7 +800,7 @@ ORDER BY ORDER_DATE
 
 ## 5.2 ORDER BY
 
-You can also use an `ORDER BY` in your window to powerfully only consider values that comparatively come before that record. For instance, you can get a ROLLING_TOTAL of the QUANTITY by ordering by the ORDER_DATE.
+You can also use an `ORDER BY` in your window to only consider values that comparatively come before that record. For instance, you can get a ROLLING_TOTAL of the QUANTITY by ordering by the ORDER_DATE.
 
 
 ```sql
