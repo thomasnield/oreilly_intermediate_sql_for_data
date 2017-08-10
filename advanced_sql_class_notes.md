@@ -181,20 +181,20 @@ CUSTOMER_ID,
 ORDER_DATE,
 PRODUCT_ID,
 QUANTITY,
-sum_qty
+total_qty
 
 FROM CUSTOMER_ORDER
 INNER JOIN
 (
     SELECT CUSTOMER_ID,
     PRODUCT_ID,
-    SUM(QUANTITY) AS sum_qty,
+    SUM(QUANTITY) AS total_qty
     FROM CUSTOMER_ORDER
     GROUP BY 1, 2
-) min_and_max_ordered
+) sum_ordered
 
-ON CUSTOMER_ORDER.CUSTOMER_ID = min_and_max_ordered.CUSTOMER_ID
-AND CUSTOMER_ORDER.PRODUCT_ID = min_and_max_ordered.PRODUCT_ID
+ON CUSTOMER_ORDER.CUSTOMER_ID = sum_ordered.CUSTOMER_ID
+AND CUSTOMER_ORDER.PRODUCT_ID = sum_ordered.PRODUCT_ID
 ```
 
 
@@ -644,6 +644,8 @@ LEFT JOIN
 
 ON all_combos.CALENDAR_DATE = totals.ORDER_DATE
 AND all_combos.PRODUCT_ID = totals.PRODUCT_ID
+
+ORDER BY CALENDAR_DATE
 ```
 
 
