@@ -169,7 +169,7 @@ GROUP BY 1
 GROUP_CONCAT is a helpful function to compress the results into a single record, in a single cell, often in a reporting context.
 
 
-## Exercise 2-2
+## Exercise 2-1
 
 Bring in all records for `CUSTOMER_ORDER`, but also bring in the minimum and maximum quantities ever ordered each given `PRODUCT_ID` and `CUSTOMER_ID`.
 
@@ -181,16 +181,14 @@ CUSTOMER_ID,
 ORDER_DATE,
 PRODUCT_ID,
 QUANTITY,
-min_qty,
-max_qty
+sum_qty
 
 FROM CUSTOMER_ORDER
 INNER JOIN
 (
     SELECT CUSTOMER_ID,
     PRODUCT_ID,
-    MIN(QUANTITY) AS min_qty,
-    MAX(QUANTITY) AS max_qty
+    SUM(QUANTITY) AS sum_qty,
     FROM CUSTOMER_ORDER
     GROUP BY 1, 2
 ) min_and_max_ordered
