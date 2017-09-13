@@ -169,7 +169,7 @@ GROUP BY 1
 GROUP_CONCAT is a helpful function to compress the results into a single record, in a single cell, often in a reporting context.
 
 
-## Exercise 2-1
+## Exercise 2-2
 
 Bring in all records for `CUSTOMER_ORDER`, but also bring in the minimum and maximum quantities ever ordered each given `PRODUCT_ID` and `CUSTOMER_ID`.
 
@@ -181,20 +181,22 @@ CUSTOMER_ID,
 ORDER_DATE,
 PRODUCT_ID,
 QUANTITY,
-total_qty
+min_qty,
+max_qty
 
 FROM CUSTOMER_ORDER
 INNER JOIN
 (
     SELECT CUSTOMER_ID,
     PRODUCT_ID,
-    SUM(QUANTITY) AS total_qty
+    MIN(QUANTITY) AS min_qty,
+    MAX(QUANTITY) AS max_qty
     FROM CUSTOMER_ORDER
     GROUP BY 1, 2
-) sum_ordered
+) min_and_max_ordered
 
-ON CUSTOMER_ORDER.CUSTOMER_ID = sum_ordered.CUSTOMER_ID
-AND CUSTOMER_ORDER.PRODUCT_ID = sum_ordered.PRODUCT_ID
+ON CUSTOMER_ORDER.CUSTOMER_ID = min_and_max_ordered.CUSTOMER_ID
+AND CUSTOMER_ORDER.PRODUCT_ID = min_and_max_ordered.PRODUCT_ID
 ```
 
 
@@ -542,6 +544,7 @@ GROUP BY 1,2,3,4,5,6,7,8
 We can join a table to itself by invoking it twice with two aliases. This can be useful, for example, to look up the previous day's order quantity (if any) for a given `CUSTOMER_ID` and `PRODUCT_ID`:
 
 ```sql
+
 SELECT o1.CUSTOMER_ORDER_ID,
 o1.CUSTOMER_ID,
 o1.PRODUCT_ID,
@@ -644,8 +647,6 @@ LEFT JOIN
 
 ON all_combos.CALENDAR_DATE = totals.ORDER_DATE
 AND all_combos.PRODUCT_ID = totals.PRODUCT_ID
-
-ORDER BY CALENDAR_DATE
 ```
 
 
@@ -752,7 +753,7 @@ FROM CUSTOMER_ORDER
 
 WHERE ORDER_DATE BETWEEN '2017-03-01' AND '2017-03-31'
 
-ORDER BY ORDER_DATE
+ORDER BY CUSTOMER_ORDER_ID
 ```
 
 Each `MAX_PRODUCT_QTY_ORDERED` will only be the minimum `QUANTITY` of that given record's `PRDOUCT_ID` and `CUSTOMER_ID`. The `WHERE` will also filter that scope to only within `MARCH`.
@@ -774,7 +775,7 @@ FROM CUSTOMER_ORDER
 
 WHERE ORDER_DATE BETWEEN '2017-03-01' AND '2017-03-31'
 
-ORDER BY ORDER_DATE
+ORDER BY CUSTOMER_ORDER_ID
 ```
 
 When you are declaring your window redundantly, you can reuse it using a `WINDOW` declaration, which goes between the `WHERE` and the `ORDER BY`.
@@ -795,12 +796,16 @@ WHERE ORDER_DATE BETWEEN '2017-03-01' AND '2017-03-31'
 
 WINDOW w AS (PARTITION BY PRODUCT_ID, CUSTOMER_ID)
 
-ORDER BY ORDER_DATE
+ORDER BY CUSTOMER_ORDER_ID
 ```
 
 ## 5.2 ORDER BY
 
-You can also use an `ORDER BY` in your window to only consider values that comparatively come before that record. For instance, you can get a ROLLING_TOTAL of the QUANTITY by ordering by the ORDER_DATE.
+You can also use an `ORDER BY` in your window to only consider values that comparatively come before that record.
+
+#### 5.2A USING ORDER BY
+
+For instance, you can get a ROLLING_TOTAL of the QUANTITY by ordering by the ORDER_DATE.
 
 
 ```sql
@@ -815,28 +820,70 @@ FROM CUSTOMER_ORDER
 
 WHERE ORDER_DATE BETWEEN '2017-03-01' AND '2017-03-31'
 
-ORDER BY ORDER_DATE
+ORDER BY CUSTOMER_ORDER_ID
 ```
 
-If you want to incrementally roll the quantity by each chronological order (not by the entire date), you can `ORDER BY` the `CUSTOMER_ORDER_ID` instead.
+Note you can precede the `ORDER BY` clause with a `DESC` keyword to window in the opposite direction.
+
+#### 5.2B Ordering and Bounds
+
+
+Above, notice our example output has the same rolling total for all records on a given date. This is because the ORDER BY in a window function by default does a logical boundary, which in this case is the `ORDER_DATE`. This means it is rolling up everything on that `ORDER_DATE` and previous to it. A side effect is all records with the same `ORDER_DATE` are going to get the same rolling total.
+
+This is the default behavior our query did previously:
+
+```sql
+
+SELECT CUSTOMER_ORDER_ID,
+CUSTOMER_ID,
+ORDER_DATE,
+PRODUCT_ID,
+QUANTITY,
+SUM(QUANTITY) OVER (ORDER BY ORDER_DATE RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS ROLLING_QUANTITY
+
+FROM CUSTOMER_ORDER
+
+WHERE ORDER_DATE BETWEEN '2017-03-01' AND '2017-03-31'
+
+ORDER BY CUSTOMER_ORDER_ID
+```
+
+
+
+If you want to incrementally roll the quantity by each row's physical order (not logical order by the entire `ORDER_DATE`), you can use `ROWS BETWEEN` instead of `RANGE BETWEEN`.
+
+
 ```sql
 SELECT CUSTOMER_ORDER_ID,
 CUSTOMER_ID,
 ORDER_DATE,
 PRODUCT_ID,
 QUANTITY,
-SUM(QUANTITY) OVER (ORDER BY CUSTOMER_ORDER_ID) AS ROLLING_QUANTITY
+SUM(QUANTITY) OVER (ORDER BY ORDER_DATE ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS ROLLING_QUANTITY
 
 FROM CUSTOMER_ORDER
 
 WHERE ORDER_DATE BETWEEN '2017-03-01' AND '2017-03-31'
 
-ORDER BY ORDER_DATE
+ORDER BY CUSTOMER_ORDER_ID
 ```
+
+Note the `AND CURRENT ROW` is a default, so you can shorthand it like this:
+
+```sql
+SUM(QUANTITY) OVER (ORDER BY ORDER_DATE ROWS UNBOUNDED PRECEDING) AS ROLLING_QUANTITY
+```
+
+>In this particular example, you could have avoided using a physical boundary by specifying your window with an `ORDER BY CUSTOMER_ORDER_ID`. But we covered the previous strategy anyway to see how to execute physical boundaries. Here is an excellent overview of windowing functions and bounds:
+http://mysqlserverteam.com/mysql-8-0-2-introducing-window-functions/
 
 ## 5.3 Mixing PARTITION BY / ORDER BY
 
-We can combine the PARTITION BY / ORDER BY to create rolling aggregations partitioned on certain fields. For example, for each record we can get the max quantity ordered up to that date
+We can combine the PARTITION BY / ORDER BY to create rolling aggregations partitioned on certain fields.
+
+#### 5.3A Simple MAX over PARITION and ORDER BY
+
+For example, for each record we can get the max quantity ordered up to that date
 
 
 ```sql
@@ -851,15 +898,67 @@ FROM CUSTOMER_ORDER
 
 WHERE ORDER_DATE BETWEEN '2017-03-01' AND '2017-03-31'
 
+ORDER BY CUSTOMER_ORDER_ID
+```
+
+
+
+#### 5.3B Rolling Total Quantity by PRODUCT_ID, with physical boundary
+
+```sql
+SELECT CUSTOMER_ORDER_ID,
+ORDER_DATE,
+CUSTOMER_ID,
+PRODUCT_ID,
+QUANTITY,
+SUM(QUANTITY) OVER(PARTITION BY PRODUCT_ID ORDER BY ORDER_DATE ROWS UNBOUNDED PRECEDING) as total_qty_for_customer_and_product
+
+FROM CUSTOMER_ORDER
+WHERE ORDER_DATE BETWEEN '2017-03-01' AND '2017-03-31'
+```
+
+You need to be very careful mixing PARITITION BY with an ORDER BY that uses a physical boundary! If you sort the results, it can get confusing very quickly because you lose that physical ordered context.
+
+```sql
+SELECT CUSTOMER_ORDER_ID,
+ORDER_DATE,
+CUSTOMER_ID,
+PRODUCT_ID,
+QUANTITY,
+SUM(QUANTITY) OVER(PARTITION BY PRODUCT_ID ORDER BY ORDER_DATE) as total_qty_for_customer_and_product
+
+FROM CUSTOMER_ORDER
+WHERE ORDER_DATE BETWEEN '2017-03-01' AND '2017-03-31'
+
 ORDER BY ORDER_DATE
 ```
 
-Note you can precede the `ORDER BY` clause with a `DESC` keyword to window in the opposite direction.
+## 5.4 Rolling Windows
+
+You can also use movable windows to create moving aggregations. For instance, you can create a six-day rolling average (3 days before, 3 days after).
+
+Note that PostgreSQL does not support this but MySQL, Teradata, and a few other platforms do.
+
+```sql
+
+SELECT CUSTOMER_ORDER_ID,
+CUSTOMER_ID,
+ORDER_DATE,
+PRODUCT_ID,
+QUANTITY,
+AVG(QUANTITY) OVER (ORDER BY ORDER_DATE RANGE BETWEEN 3 PRECEDING AND 3 FOLLOWING) AS SIX_DAY_WINDOW_AVG
+
+FROM CUSTOMER_ORDER
+
+WHERE ORDER_DATE BETWEEN '2017-03-01' AND '2017-03-31'
+
+ORDER BY CUSTOMER_ORDER_ID
+```
 
 
 # EXERCISE
 
-For the month of March, bring in every order along with the sum of quantity ordered for that `CUSTOMER_ID` and `PRODUCT_ID`.
+For the month of March, bring in the rolling sum of quantity ordered (up to each `ORDER_DATE`) by `CUSTOMER_ID` and `PRODUCT_ID`.
 
 ```sql
 SELECT CUSTOMER_ORDER_ID,
