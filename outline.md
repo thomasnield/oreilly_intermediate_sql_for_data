@@ -11,7 +11,7 @@ II. Subqueries, Derived Tables, and Unions (30 minutes)
   * Using group_concat()
   * Exercises
 
-(10 minute break)
+  (10 minute break)
 
 III. Regular Expressions (20 minutes)
   * Introduction to regular expressions

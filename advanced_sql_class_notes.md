@@ -177,26 +177,24 @@ Bring in all records for `CUSTOMER_ORDER`, but also bring in the minimum and max
 
 ```sql
 SELECT CUSTOMER_ORDER_ID,
-CUSTOMER_ID,
+CUSTOMER_ORDER.CUSTOMER_ID,
 ORDER_DATE,
-PRODUCT_ID,
+CUSTOMER_ORDER.PRODUCT_ID,
 QUANTITY,
-min_qty,
-max_qty
+sum_qty
 
 FROM CUSTOMER_ORDER
 INNER JOIN
 (
     SELECT CUSTOMER_ID,
     PRODUCT_ID,
-    MIN(QUANTITY) AS min_qty,
-    MAX(QUANTITY) AS max_qty
+    SUM(QUANTITY) AS sum_qty
     FROM CUSTOMER_ORDER
     GROUP BY 1, 2
-) min_and_max_ordered
+) total_ordered
 
-ON CUSTOMER_ORDER.CUSTOMER_ID = min_and_max_ordered.CUSTOMER_ID
-AND CUSTOMER_ORDER.PRODUCT_ID = min_and_max_ordered.PRODUCT_ID
+ON CUSTOMER_ORDER.CUSTOMER_ID = total_ordered.CUSTOMER_ID
+AND CUSTOMER_ORDER.PRODUCT_ID = total_ordered.PRODUCT_ID
 ```
 
 
@@ -647,6 +645,8 @@ LEFT JOIN
 
 ON all_combos.CALENDAR_DATE = totals.ORDER_DATE
 AND all_combos.PRODUCT_ID = totals.PRODUCT_ID
+
+ORDER BY CALENDAR_DATE, all_combos.PRODUCT_ID
 ```
 
 
@@ -966,7 +966,7 @@ ORDER_DATE,
 CUSTOMER_ID,
 PRODUCT_ID,
 QUANTITY,
-SUM(QUANTITY) OVER(PARTITION BY CUSTOMER_ID, PRODUCT_ID) as total_qty_for_customer_and_product
+SUM(QUANTITY) OVER(PARTITION BY CUSTOMER_ID, PRODUCT_ID ORDER BY ORDER_DATE) as total_qty_for_customer_and_product
 
 FROM CUSTOMER_ORDER
 WHERE ORDER_DATE BETWEEN '2017-03-01' AND '2017-03-31'
@@ -1168,7 +1168,7 @@ public class Launcher {
             Connection conn = ds.getConnection();
 
             // Create a PreparedStatement and populate parameter
-            PreparedStatement stmt = conn.prepareStatement("SELECT * from CUSTOMER WHERE CUSTOMER_ID = ?");
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM CUSTOMER WHERE CUSTOMER_ID = ?");
             stmt.setInt(1,3);
 
             ResultSet rs = stmt.executeQuery();
