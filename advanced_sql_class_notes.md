@@ -168,6 +168,7 @@ GROUP BY 1
 
 GROUP_CONCAT is a helpful function to compress the results into a single record, in a single cell, often in a reporting context.
 
+Note that `GROUP_CONCAT` is used in MySQL and SQLite, but is often called `STRING_AGG` on other platforms such as Oracle, PostgreSQL, and Microsoft SQL Server.
 
 ## Exercise 2-2
 
@@ -711,19 +712,8 @@ AND all_combos.CUSTOMER_ID = totals.CUSTOMER_ID
 
 # Section V - Windowing
 
-Windowing functions allow you to greate contextual aggregations in ways much more flexible than GROUP BY. Many major database platforms support windowing functions, including:
+Windowing functions allow you to greater contextual aggregations in ways much more flexible than GROUP BY. Many major database platforms support windowing functions.
 
-* Oracle
-* Teradata
-* PostgreSQL
-* SQL Server
-* Apache Spark SQL
-
-These platforms notably do not have windowing functions:
-
-* MySQL
-* SQLite
-* MariaDB
 
 Since SQLite does not support windowing functions, we are going to use [PostgreSQL](https://www.postgresql.org/). While PostgreSQL is free and open-source, there are a few steps in getting it set up. Therefore to save time we are going to use Rextester, a web-based client that can run PostgreSQL queries.
 
@@ -925,7 +915,7 @@ ORDER_DATE,
 CUSTOMER_ID,
 PRODUCT_ID,
 QUANTITY,
-SUM(QUANTITY) OVER(PARTITION BY PRODUCT_ID ORDER BY ORDER_DATE) as total_qty_for_customer_and_product
+SUM(QUANTITY) OVER(PARTITION BY PRODUCT_ID ORDER BY ORDER_DATE) as total_qty_for_product
 
 FROM CUSTOMER_ORDER
 WHERE ORDER_DATE BETWEEN '2017-03-01' AND '2017-03-31'
