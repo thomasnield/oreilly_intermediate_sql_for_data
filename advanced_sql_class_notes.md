@@ -22,7 +22,27 @@ WHERE ORDER_DATE = (SELECT MAX(ORDER_DATE) FROM CUSTOMER_ORDER)
 ```
 
 
-## 2.1B - Aliasing Tables and Scalar Subquery Aggregation
+## 2.1B - Multi-value Subqueries
+
+Sometimes it can be helpful to leverage subqueries that return a set of values, rather than one scalar value. For instance, to query customer orders for customers in TX, we can save ourselves a join and use a subquery to get CUSTOMER_ID's that belong to customers in TX. Then we can leverage that with a WHERE and specify an `IN` condition:
+
+```sql
+SELECT CUSTOMER_ORDER_ID,
+CUSTOMER_ID,
+ORDER_DATE,
+PRODUCT_ID,
+QUANTITY
+
+FROM CUSTOMER_ORDER
+
+WHERE CUSTOMER_ID IN (
+    SELECT CUSTOMER_ID
+    FROM CUSTOMER
+    WHERE STATE = 'TX'
+)
+```
+
+## 2.2 - Aliasing Tables and Scalar Subquery Aggregation
 
 Retrieving the average of quantity by each record's CUSTOMER_ID and PRODUCT_ID
 
@@ -43,25 +63,6 @@ FROM CUSTOMER_ORDER c1
 
 Depending on how they are used, subqueries can be more expensive or less expensive than joins. Subqueries that generate a value for each record tend to me more expensive, like the example above.
 
-## 2.2C - Multi-value Subqueries
-
-Sometimes it can be helpful to leverage subqueries that return a set of values, rather than one scalar value. For instance, to query customer orders for customers in TX, we can save ourselves a join and use a subquery to get CUSTOMER_ID's that belong to customers in TX. Then we can leverage that with a WHERE and specify an `IN` condition:
-
-```sql
-SELECT CUSTOMER_ORDER_ID,
-CUSTOMER_ID,
-ORDER_DATE,
-PRODUCT_ID,
-QUANTITY
-
-FROM CUSTOMER_ORDER
-
-WHERE CUSTOMER_ID IN (
-    SELECT CUSTOMER_ID
-    FROM CUSTOMER
-    WHERE STATE = 'TX'
-)
-```
 
 ## 2.3 - Derived Tables
 
