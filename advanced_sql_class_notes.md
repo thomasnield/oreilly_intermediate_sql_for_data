@@ -401,7 +401,7 @@ Find all customers with an address ending in "Blvd" or "St":
 SELECT * FROM CUSTOMER
 WHERE ADDRESS REGEXP '.*(Blvd|St)$'
 ```
-# Section IV - Advanced Joins
+# Section IV - Advanced Joins and Temporary Tables
 
 ## 4.1 Inner Join Review
 
