@@ -89,7 +89,31 @@ ON CUSTOMER_ORDER.CUSTOMER_ID = cust_avgs.CUSTOMER_ID
 AND CUSTOMER_ORDER.PRODUCT_ID = cust_avgs.PRODUCT_ID
 ```
 
-## 2.4 - Unions
+## 2.4 Common Table Expressions
+
+You can actually create Common Table Expressions to "re-use" one or more derived tables. These can be helpful to simply provide names to derived tables, and simplify your queries greatly. 
+
+For instance, we can create two derived tables "TX_CUSTOMERS" and "TX_ORDERS" but give them names as common table expressions. Then we can proceed to use those two derived tables like this. 
+
+```sql
+
+WITH TX_CUSTOMERS AS 
+(
+SELECT * FROM CUSTOMER
+WHERE STATE = 'TX'
+), 
+
+TX_ORDERS AS 
+(
+SELECT * FROM CUSTOMER_ORDER
+WHERE CUSTOMER_ID IN (SELECT CUSTOMER_ID FROM TX_CUSTOMERS)
+)
+
+SELECT * FROM  TX_ORDERS INNER JOIN TX_CUSTOMERS
+ON TX_ORDERS.CUSTOMER_ID = TX_CUSTOMERS.CUSTOMER_ID
+```
+
+## 2.5 - Unions
 
 To simply append two queries (with identical fields) together, put a `UNION ALL` between them.
 
@@ -141,7 +165,7 @@ GROUP BY 1,2,3
 ```
 
 
-## 2.5 - GROUP CONCAT
+## 2.6 - GROUP CONCAT
 
 A neat little trick you can do on some database platforms (like SQLite, MySQL, and PostgreSQL) is the `group_concat()` aggregate function. This will concatenate all values in a column as an aggregation, and can be used in conjunction with a GROUP BY like MIN, MAX, AVG, etc.
 
@@ -171,7 +195,7 @@ GROUP_CONCAT is a helpful function to compress the results into a single record,
 
 Note that `GROUP_CONCAT` is used in MySQL and SQLite, but is often called `STRING_AGG` on other platforms such as Oracle, PostgreSQL, and Microsoft SQL Server.
 
-## Exercise 2-2
+## Exercise 2
 
 Bring in all records for `CUSTOMER_ORDER`, but also bring in the minimum and maximum quantities ever ordered each given `PRODUCT_ID` and `CUSTOMER_ID`.
 
@@ -540,31 +564,7 @@ GROUP BY 1,2,3,4,5,6,7,8
 ```
 
 
-## 4.5 Common Table Expressions
-
-Similiar to temporary tables, you can actually create Common Table Expressions to "re-use" one or more derived tables. You can certainly use temporary tables instead, but if you don't want to persist and save the data, common table expressions can be helpful to simply provide names to derived tables. This way you can simplify your queries greatly. 
-
-For instance, we can create two derived tables "TX_CUSTOMERS" and "TX_ORDERS" but give them names as common table expressions. Then we can proceed to use those two derived tables like this. 
-
-```sql
-
-WITH TX_CUSTOMERS AS 
-(
-SELECT * FROM CUSTOMER
-WHERE STATE = 'TX'
-), 
-
-TX_ORDERS AS 
-(
-SELECT * FROM CUSTOMER_ORDER
-WHERE CUSTOMER_ID IN (SELECT CUSTOMER_ID FROM TX_CUSTOMERS)
-)
-
-SELECT * FROM  TX_ORDERS INNER JOIN TX_CUSTOMERS
-ON TX_ORDERS.CUSTOMER_ID = TX_CUSTOMERS.CUSTOMER_ID
-```
-
-## 4.6 Self Joins
+## 4.5 Self Joins
 
 We can join a table to itself by invoking it twice with two aliases. This can be useful, for example, to look up the previous day's order quantity (if any) for a given `CUSTOMER_ID` and `PRODUCT_ID`:
 
@@ -607,7 +607,7 @@ QUANTITY,
 FROM CUSTOMER_ORDER c1
 ```
 
-## 4.7 Cross Joins
+## 4.6 Cross Joins
 
 Sometimes it can be helpful to generate a "cartesian product", or every possible combination between two or more data sets using a CROSS JOIN. This is often done to generate a data set that fills in gaps for another query. Not every calendar date has orders, nor does every order date have an entry for every product, as shown in this query:
 
@@ -677,7 +677,7 @@ ORDER BY CALENDAR_DATE, all_combos.PRODUCT_ID
 ```
 
 
-## 4.8 Comparative Joins
+## 4.7 Comparative Joins
 
 Note also you can use comparison operators in joins. For instance, we can self-join to create rolling quantity totals and generate a cartesian product on previous dates to the current order, and then sum those quantities. It is much easier to use windowing functions for this purpose though, which is covered in the next section.
 
