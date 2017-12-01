@@ -539,7 +539,32 @@ WHERE ORDER_DATE BETWEEN '2017-03-26' AND '2017-03-31'
 GROUP BY 1,2,3,4,5,6,7,8
 ```
 
-## 4.5 Self Joins
+
+## 4.5 Common Table Expressions
+
+Similiar to temporary tables, you can actually create Common Table Expressions to "re-use" one or more derived tables. You can certainly use temporary tables instead, but if you don't want to persist and save the data, common table expressions can be helpful to simply provide names to derived tables. This way you can simplify your queries greatly. 
+
+For instance, we can create two derived tables "TX_CUSTOMERS" and "TX_ORDERS" but give them names as common table expressions. Then we can proceed to use those two derived tables like this. 
+
+```sql
+
+WITH TX_CUSTOMERS AS 
+(
+SELECT * FROM CUSTOMER
+WHERE STATE = 'TX'
+), 
+
+TX_ORDERS AS 
+(
+SELECT * FROM CUSTOMER_ORDER
+WHERE CUSTOMER_ID IN (SELECT CUSTOMER_ID FROM TX_CUSTOMERS)
+)
+
+SELECT * FROM  TX_ORDERS INNER JOIN TX_CUSTOMERS
+ON TX_ORDERS.CUSTOMER_ID = TX_CUSTOMERS.CUSTOMER_ID
+```
+
+## 4.6 Self Joins
 
 We can join a table to itself by invoking it twice with two aliases. This can be useful, for example, to look up the previous day's order quantity (if any) for a given `CUSTOMER_ID` and `PRODUCT_ID`:
 
@@ -582,7 +607,7 @@ QUANTITY,
 FROM CUSTOMER_ORDER c1
 ```
 
-## 4.6 Cross Joins
+## 4.7 Cross Joins
 
 Sometimes it can be helpful to generate a "cartesian product", or every possible combination between two or more data sets using a CROSS JOIN. This is often done to generate a data set that fills in gaps for another query. Not every calendar date has orders, nor does every order date have an entry for every product, as shown in this query:
 
@@ -652,7 +677,7 @@ ORDER BY CALENDAR_DATE, all_combos.PRODUCT_ID
 ```
 
 
-## 4.7 Comparative Joins
+## 4.8 Comparative Joins
 
 Note also you can use comparison operators in joins. For instance, we can self-join to create rolling quantity totals and generate a cartesian product on previous dates to the current order, and then sum those quantities. It is much easier to use windowing functions for this purpose though, which is covered in the next section.
 
