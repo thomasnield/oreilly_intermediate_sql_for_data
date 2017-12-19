@@ -91,19 +91,19 @@ AND CUSTOMER_ORDER.PRODUCT_ID = cust_avgs.PRODUCT_ID
 
 ## 2.4 Common Table Expressions
 
-You can actually create Common Table Expressions to "re-use" one or more derived tables. These can be helpful to simply provide names to derived tables, and simplify your queries greatly. 
+You can actually create Common Table Expressions to "re-use" one or more derived tables. These can be helpful to simply provide names to derived tables, and simplify your queries greatly.
 
-For instance, we can create two derived tables "TX_CUSTOMERS" and "TX_ORDERS" but give them names as common table expressions. Then we can proceed to use those two derived tables like this. 
+For instance, we can create two derived tables "TX_CUSTOMERS" and "TX_ORDERS" but give them names as common table expressions. Then we can proceed to use those two derived tables like this.
 
 ```sql
 
-WITH TX_CUSTOMERS AS 
+WITH TX_CUSTOMERS AS
 (
 SELECT * FROM CUSTOMER
 WHERE STATE = 'TX'
-), 
+),
 
-TX_ORDERS AS 
+TX_ORDERS AS
 (
 SELECT * FROM CUSTOMER_ORDER
 WHERE CUSTOMER_ID IN (SELECT CUSTOMER_ID FROM TX_CUSTOMERS)
@@ -231,6 +231,9 @@ Regular expressions are a powerful tool for qualifying complex text patterns. Th
 While regular expressions can be used to split and search text, we will primarily be using it to match text, much like wildcards.
 
 The REGEXP operator is used in SQLite for matching a text to a regex pattern. Like all boolean operations, it will return a `1` for true or `0` for false.
+
+I also published an article with O'Reilly that covers regular expressions in a bit more depth here:
+https://www.oreilly.com/ideas/an-introduction-to-regular-expressions
 
 
 ## 3.1 - Literals
