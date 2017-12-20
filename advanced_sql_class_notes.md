@@ -697,22 +697,22 @@ SELECT e1.* ,
 FROM EMPLOYEE e1
 ```
 
-| ID | FIRST_NAME | LAST_NAME  | TITLE               | DEPARTMENT  | MANAGER_ID | HIERARCHY_IDS  | 
-|----|------------|------------|---------------------|-------------|------------|----------------| 
-| 14 | Harper     | Argontt    | Director            | Operations  | 3          | "1,3,14"       | 
-| 15 | Fabio      | Treversh   | Manager             | Operations  | 14         | "1,3,14,15"    | 
-| 16 | Gerard     | Morforth   | Analyst             | Operations  | 15         | "1,3,14,15,16" | 
-| 17 | Stephanus  | Palatino   | Senior Analyst      | Operations  | 15         | "1,3,14,15,17" | 
-| 18 | Jennilee   | Withers    | Analyst             | Operations  | 15         | "1,3,14,15,18" | 
-| 19 | Desdemona  | Farmar     | Business Consultant | Operations  | 15         | "1,3,14,15,19" | 
-| 20 | Ashlin     | Creamen    | Manager             | Operations  | 14         | "1,3,14,20"    | 
-| 21 | Daniel     | Licquorish | Analyst             | Operations  | 20         | "1,3,14,20,21" | 
-| 22 | Quill      | Pinder     | Senior Analyst      | Operations  | 20         | "1,3,14,20,22" | 
-| 23 | Maybelle   | Freiburger | Business Consultant | Operations  | 20         | "1,3,14,20,23" | 
-| 24 | Angelique  | Havis      | Business Consultant | Operations  | 20         | "1,3,14,20,24" | 
-| 25 | Lyn        | Geale      | Director            | Technology  | 4          | "1,4,25"       | 
-| 26 | Tammy      | Eakly      | Manager             | Help Desk   | 25         | "1,4,25,26"    | 
-| 27 | Junie      | Blanque    | Technician I        | Help Desk   | 26         | "1,4,25,26,27" | 
+| ID | FIRST_NAME | LAST_NAME  | TITLE               | DEPARTMENT  | MANAGER_ID | HIERARCHY_IDS| 
+|----|------------|------------|---------------------|-------------|------------|--------------| 
+| 14 | Harper     | Argontt    | Director            | Operations  | 3          | 1,3,14       | 
+| 15 | Fabio      | Treversh   | Manager             | Operations  | 14         | 1,3,14,15    | 
+| 16 | Gerard     | Morforth   | Analyst             | Operations  | 15         | 1,3,14,15,16 | 
+| 17 | Stephanus  | Palatino   | Senior Analyst      | Operations  | 15         | 1,3,14,15,17 | 
+| 18 | Jennilee   | Withers    | Analyst             | Operations  | 15         | 1,3,14,15,18 | 
+| 19 | Desdemona  | Farmar     | Business Consultant | Operations  | 15         | 1,3,14,15,19 | 
+| 20 | Ashlin     | Creamen    | Manager             | Operations  | 14         | 1,3,14,20    | 
+| 21 | Daniel     | Licquorish | Analyst             | Operations  | 20         | 1,3,14,20,21 | 
+| 22 | Quill      | Pinder     | Senior Analyst      | Operations  | 20         | 1,3,14,20,22 | 
+| 23 | Maybelle   | Freiburger | Business Consultant | Operations  | 20         | 1,3,14,20,23 | 
+| 24 | Angelique  | Havis      | Business Consultant | Operations  | 20         | 1,3,14,20,24 | 
+| 25 | Lyn        | Geale      | Director            | Technology  | 4          | 1,4,25       | 
+| 26 | Tammy      | Eakly      | Manager             | Help Desk   | 25         | 1,4,25,26    | 
+| 27 | Junie      | Blanque    | Technician I        | Help Desk   | 26         | 1,4,25,26,27 | 
 
 
 
