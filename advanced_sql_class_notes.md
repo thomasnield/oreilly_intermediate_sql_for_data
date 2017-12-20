@@ -662,7 +662,7 @@ A recursion is a special type of common table expression (CTE). Typically, you "
 In this case, we will use a `RECURSIVE` common table expression to seed Daniel's ID, and then append each `MANAGER_ID` of each `EMPLOYEE_ID` that matches the seed. This will give a set of ID's for employees hierarchical to Daniel. We can then use these ID's to navigate Daniel's hierarchy via JOINS, IN, or other SQL operators. 
 
 ```sql
--- generates a list of employee ID's hierarchical to Ashlin
+-- generates a list of employee ID's hierarchical to Daniel
 
 WITH RECURSIVE hierarchy_of_daniel(x) AS (
  SELECT 21 -- start with Daniel's ID
