@@ -683,7 +683,7 @@ SELECT e1.* ,
 
 (
     WITH RECURSIVE hierarchy_of(x) AS (
-     SELECT e1.ID -- start with Daniel's ID
+     SELECT e1.ID 
      UNION ALL -- append each manager ID recursively
      SELECT MANAGER_ID 
      FROM hierarchy_of INNER JOIN EMPLOYEE
