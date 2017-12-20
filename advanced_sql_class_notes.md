@@ -655,7 +655,7 @@ WHERE e1.FIRST_NAME = 'Daniel'
 | Daniel     | Licquorish | Analyst | Ashlin             | Creamen           | 
 
 
-But what if you wanted to display the entire hierarchy above Daniel? Well shoot, this is hard because now I have to do several self joins to daisy-chain my way to the top. What makes this even harder is I don't know how many self joins I will need to do. For cases like this, it can be helpful to leverage recursive queries. 
+But what if you wanted to display the entire hierarchy above Daniel? Well shoot, this is hard because now you have to do several self joins to daisy-chain your way to the top. What makes this even harder is you don't know how many self joins you will need to do. For cases like this, it can be helpful to leverage recursive queries. 
 
 A recursion is a special type of common table expression (CTE). Typically, you "seed" a starting value and then use `UNION` or `UNION ALL` to append the results of a query that uses each "seed", and the result becomes the next seed. 
 
