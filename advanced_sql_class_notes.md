@@ -1185,7 +1185,7 @@ You can get detailed information on how to work with R and SQL in the official D
 
 ## 6-3 Using SQL with Java/Scala/Kotlin
 
-There are many solutions to make a Java, Scala, or Kotlin application work with a Java database. The vanilla way we will learn is to use JDBC (Java Database Connection).
+There are many solutions to make a Java, Scala, or Kotlin application work with a database. The vanilla way we will learn is to use JDBC (Java Database Connection).
 
 Keep in mind there are many solutions and libraries that abstract away SQL operations, which can be good or bad depending on how much control you want to maintain:
 
