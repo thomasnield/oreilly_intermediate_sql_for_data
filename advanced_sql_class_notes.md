@@ -667,7 +667,7 @@ WITH RECURSIVE hierarchy_of_daniel(x) AS (
  UNION ALL -- append each manager ID recursively
  SELECT MANAGER_ID 
  FROM hierarchy_of_daniel INNER JOIN EMPLOYEE
- WHERE EMPLOYEE.ID = hierarchy_of_daniel.x -- employee ID must equal previous recursion
+ ON EMPLOYEE.ID = hierarchy_of_daniel.x -- employee ID must equal previous recursion
 )
 
 SELECT * FROM EMPLOYEE
