@@ -567,7 +567,7 @@ GROUP BY 1,2,3,4,5,6,7,8
 ```
 
 
-## 4.5 Self Joins
+## 4.5A Self Joins
 
 We can join a table to itself by invoking it twice with two aliases. This can be useful, for example, to look up the previous day's order quantity (if any) for a given `CUSTOMER_ID` and `PRODUCT_ID`:
 
@@ -608,6 +608,96 @@ QUANTITY,
     LIMIT 1
 ) as PREV_QTY
 FROM CUSTOMER_ORDER c1
+```
+
+
+## 4.5B Recursive Self Joins
+
+At some point of your career, you may encounter a table that is inherently designed to be self-joined. For instance, run this query: 
+
+```sql
+SELECT * FROM EMPLOYEE
+```
+
+This is a table containing employee information, including their manager via a `MANAGER_ID` field. Here is a sample of the results below. 
+
+| ID | FIRST_NAME | LAST_NAME  | TITLE               | DEPARTMENT  | MANAGER_ID | 
+|----|------------|------------|---------------------|-------------|------------| 
+| 13 | Pembroke   | Killgus    | Accountant I        | Accounting  | 10         | 
+| 14 | Harper     | Argontt    | Director            | Operations  | 3          | 
+| 15 | Fabio      | Treversh   | Manager             | Operations  | 14         | 
+| 16 | Gerard     | Morforth   | Analyst             | Operations  | 15         | 
+| 17 | Stephanus  | Palatino   | Senior Analyst      | Operations  | 15         | 
+| 18 | Jennilee   | Withers    | Analyst             | Operations  | 15         | 
+| 19 | Desdemona  | Farmar     | Business Consultant | Operations  | 15         | 
+| 20 | Ashlin     | Creamen    | Manager             | Operations  | 14         | 
+| 21 | Daniel     | Licquorish | Analyst             | Operations  | 20         | 
+
+This `MANAGER_ID` points to another `EMPLOYEE` record. If you want to bring in Daniel and his superior's information, this isn't hard to do with a self join. 
+
+```sql
+SELECT e1.FIRST_NAME, 
+e1.LAST_NAME, 
+e1.TITLE,
+e2.FIRST_NAME AS MANAGER_FIRST_NAME,
+e2.LAST_NAME AS MANAGER_LAST_NAME
+
+FROM EMPLOYEE e1 INNER JOIN EMPLOYEE e2
+ON e1.MANAGER_ID = e2.ID
+
+WHERE e1.FIRST_NAME = 'Daniel'
+```
+
+| FIRST_NAME | LAST_NAME  | TITLE   | MANAGER_FIRST_NAME | MANAGER_LAST_NAME | 
+|------------|------------|---------|--------------------|-------------------| 
+| Daniel     | Licquorish | Analyst | Ashlin             | Creamen           | 
+
+
+But what if you wanted to display the entire hierarchy above Daniel? Well shoot, this is hard because now I have to do several self joins to daisy-chain my way to the top. What makes this even harder is I don't know how many self joins I will need to do. For cases like this, it can be helpful to leverage recursive queries. 
+
+A recursion is a special type of common table expression (CTE). Typically, you "seed" a starting value and then use `UNION` or `UNION ALL` to append the results of a query that uses each "seed", and the result becomes the next seed. 
+
+In this case, we will use a `RECURSIVE` common table expression to seed Daniel's ID, and then append each `MANAGER_ID` of each `EMPLOYEE_ID` that matches the seed. This will give a set of ID's for employees hierarchical to Daniel. We can then use these ID's to navigate Daniel's hierarchy via JOINS, IN, or other SQL operators. 
+
+```sql
+-- generates a list of employee ID's hierarchical to Ashlin
+
+WITH RECURSIVE hierarchy_of_daniel(x) AS (
+ SELECT 21 -- start with Daniel's ID
+ UNION ALL -- append each manager ID recursively
+ SELECT MANAGER_ID 
+ FROM hierarchy_of_daniel INNER JOIN EMPLOYEE
+ WHERE EMPLOYEE.ID = hierarchy_of_daniel.x -- employee ID must equal previous recursion
+)
+
+SELECT * FROM EMPLOYEE
+WHERE ID IN hierarchy_of_daniel;
+```
+
+Recursive queries are a bit tricky to get right, but practice them if you have tables structured like this. Note they also can be used to improvise a set of consecutive values without creating a table. For instance, we can generate a set of consecutive integers. Here is how you create a set of integers from 1 to 1000. 
+
+```sql
+WITH RECURSIVE my_integers(x) AS (
+    SELECT 1
+        UNION ALL
+    SELECT x + 1 
+    FROM my_integers
+    WHERE x < 1000
+)
+SELECT * FROM my_integers
+```
+
+You can apply the same concept to generate a set of chronological dates. This recursive query will generate all dates from today to '2030-12-31':
+
+```sql
+WITH RECURSIVE my_dates(x) AS (
+    SELECT date('now')
+        UNION ALL
+    SELECT date(x, '+1 day')
+    FROM my_dates
+    WHERE x < '2030-12-31'
+)
+SELECT * FROM my_dates
 ```
 
 ## 4.6 Cross Joins
