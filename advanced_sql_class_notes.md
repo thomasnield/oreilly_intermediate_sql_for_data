@@ -700,6 +700,7 @@ WITH RECURSIVE my_dates(x) AS (
 SELECT * FROM my_dates
 ```
 
+
 ## 4.6 Cross Joins
 
 Sometimes it can be helpful to generate a "cartesian product", or every possible combination between two or more data sets using a CROSS JOIN. This is often done to generate a data set that fills in gaps for another query. Not every calendar date has orders, nor does every order date have an entry for every product, as shown in this query:
@@ -724,7 +725,7 @@ FROM CUSTOMER
 CROSS JOIN PRODUCT
 ```
 
-In this case we should bring in `CALENDAR_DATE` and cross join it with `PRODUCT_ID` to get every possible combination of calendar date and product. Note the `CALENDAR_DATE` comes from the `CALENDAR` table, which acts as a simple list of consecutive calendar dates. We should only filter the calendar to a date range of interest, like `2017-01-01` and `2017-03-31`.
+In this case we should bring in `CALENDAR_DATE` and cross join it with `PRODUCT_ID` to get every possible combination of calendar date and product. Note the `CALENDAR_DATE` comes from the `CALENDAR` table, which acts as a simple list of consecutive calendar dates. Note we could also have used a recursive query, as shown in the previous example, to generate the dates. We'll stick with a simple table instead for now in case you are not comfortable with recursion yet. We should only filter the calendar to a date range of interest, like `2017-01-01` and `2017-03-31`.
 
 ```sql
 SELECT
