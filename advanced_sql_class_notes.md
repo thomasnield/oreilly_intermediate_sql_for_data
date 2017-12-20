@@ -676,7 +676,48 @@ SELECT * FROM EMPLOYEE
 WHERE ID IN hierarchy_of_daniel;
 ```
 
-Recursive queries are a bit tricky to get right, but practice them if you have tables structured like this. Note they also can be used to improvise a set of consecutive values without creating a table. For instance, we can generate a set of consecutive integers. Here is how you create a set of integers from 1 to 1000. 
+Recursive queries are a bit tricky to get right, but practice them if you deal frequently with hierarchical records. You will likely use them with a specific part of the hierarchy in focus (e.g. Daniel's superiors). It's harder to show the hierarchy for everyone at once, but there are ways. For instance, you can put a RECURSIVE operation in a subquery and use `GROUP_CONCAT`. 
+
+```sql
+SELECT e1.* , 
+
+(
+    WITH RECURSIVE hierarchy_of(x) AS (
+     SELECT e1.ID -- start with Daniel's ID
+     UNION ALL -- append each manager ID recursively
+     SELECT MANAGER_ID 
+     FROM hierarchy_of INNER JOIN EMPLOYEE
+     ON EMPLOYEE.ID = hierarchy_of.x -- employee ID must equal previous recursion
+     )
+
+    SELECT GROUP_CONCAT(ID) FROM EMPLOYEE e2
+    WHERE ID IN hierarchy_of
+) AS HIERARCHY_IDS
+
+FROM EMPLOYEE e1
+```
+
+| ID | FIRST_NAME | LAST_NAME  | TITLE               | DEPARTMENT  | MANAGER_ID | HIERARCHY_IDS  | 
+|----|------------|------------|---------------------|-------------|------------|----------------| 
+| 14 | Harper     | Argontt    | Director            | Operations  | 3          | "1,3,14"       | 
+| 15 | Fabio      | Treversh   | Manager             | Operations  | 14         | "1,3,14,15"    | 
+| 16 | Gerard     | Morforth   | Analyst             | Operations  | 15         | "1,3,14,15,16" | 
+| 17 | Stephanus  | Palatino   | Senior Analyst      | Operations  | 15         | "1,3,14,15,17" | 
+| 18 | Jennilee   | Withers    | Analyst             | Operations  | 15         | "1,3,14,15,18" | 
+| 19 | Desdemona  | Farmar     | Business Consultant | Operations  | 15         | "1,3,14,15,19" | 
+| 20 | Ashlin     | Creamen    | Manager             | Operations  | 14         | "1,3,14,20"    | 
+| 21 | Daniel     | Licquorish | Analyst             | Operations  | 20         | "1,3,14,20,21" | 
+| 22 | Quill      | Pinder     | Senior Analyst      | Operations  | 20         | "1,3,14,20,22" | 
+| 23 | Maybelle   | Freiburger | Business Consultant | Operations  | 20         | "1,3,14,20,23" | 
+| 24 | Angelique  | Havis      | Business Consultant | Operations  | 20         | "1,3,14,20,24" | 
+| 25 | Lyn        | Geale      | Director            | Technology  | 4          | "1,4,25"       | 
+| 26 | Tammy      | Eakly      | Manager             | Help Desk   | 25         | "1,4,25,26"    | 
+| 27 | Junie      | Blanque    | Technician I        | Help Desk   | 26         | "1,4,25,26,27" | 
+
+
+
+
+Note recursive queries also can be used to improvise a set of consecutive values without creating a table. For instance, we can generate a set of consecutive integers. Here is how you create a set of integers from 1 to 1000. 
 
 ```sql
 WITH RECURSIVE my_integers(x) AS (
@@ -701,7 +742,6 @@ WITH RECURSIVE my_dates(x) AS (
 )
 SELECT * FROM my_dates
 ```
-
 
 ## 4.6 Cross Joins
 
