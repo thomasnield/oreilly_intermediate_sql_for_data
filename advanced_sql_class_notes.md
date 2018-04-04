@@ -9,6 +9,7 @@ https://sqlitestudio.pl/index.rvt?act=download
 The files for this class can be downloaded here:
 https://github.com/thomasnield/oreilly_advanced_sql_for_data
 
+Import the "thunderbird_manufacturing.db" database file, which we will be using for almost all of the examples. 
 
 # Section II - Subqueries, Unions, and Advanced Aggregations
 
