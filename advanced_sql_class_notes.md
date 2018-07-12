@@ -94,6 +94,29 @@ AND CUSTOMER_ORDER.PRODUCT_ID = cust_avgs.PRODUCT_ID
 
 You can actually create Common Table Expressions to "re-use" one or more derived tables. These can be helpful to simply provide names to derived tables, and simplify your queries greatly.
 
+```sql 
+WITH CUST_AVGS AS (
+    SELECT CUSTOMER_ID,
+    PRODUCT_ID,
+    AVG(QUANTITY) AS AVG_QTY
+    FROM CUSTOMER_ORDER
+    GROUP BY 1, 2
+)
+
+SELECT CUSTOMER_ORDER_ID,
+CUSTOMER_ORDER.CUSTOMER_ID,
+ORDER_DATE,
+CUSTOMER_ORDER.PRODUCT_ID,
+QUANTITY, 
+AVG_QTY
+
+FROM CUSTOMER_ORDER INNER JOIN CUST_AVGS
+
+ON CUSTOMER_ORDER.CUSTOMER_ID = cust_avgs.CUSTOMER_ID
+AND CUSTOMER_ORDER.PRODUCT_ID = cust_avgs.PRODUCT_ID
+```
+
+
 For instance, we can create two derived tables "TX_CUSTOMERS" and "TX_ORDERS" but give them names as common table expressions. Then we can proceed to use those two derived tables like this.
 
 ```sql
@@ -196,7 +219,7 @@ GROUP_CONCAT is a helpful function to compress the results into a single record,
 
 Note that `GROUP_CONCAT` is used in MySQL and SQLite, but is often called `STRING_AGG` on other platforms such as Oracle, PostgreSQL, and Microsoft SQL Server.
 
-## Exercise 2
+## Exercise 1
 
 Bring in all records for `CUSTOMER_ORDER`, but also bring in the minimum and maximum quantities ever ordered each given `PRODUCT_ID` and `CUSTOMER_ID`.
 
@@ -219,6 +242,30 @@ INNER JOIN
     FROM CUSTOMER_ORDER
     GROUP BY 1, 2
 ) total_ordered
+
+ON CUSTOMER_ORDER.CUSTOMER_ID = total_ordered.CUSTOMER_ID
+AND CUSTOMER_ORDER.PRODUCT_ID = total_ordered.PRODUCT_ID
+```
+
+Or if you choose to use a common table expression...
+
+```sql
+WITH total_ordered AS (
+    SELECT CUSTOMER_ID,
+    PRODUCT_ID,
+    SUM(QUANTITY) AS sum_qty
+    FROM CUSTOMER_ORDER
+    GROUP BY 1, 2
+) 
+
+SELECT CUSTOMER_ORDER_ID,
+CUSTOMER_ORDER.CUSTOMER_ID,
+ORDER_DATE,
+CUSTOMER_ORDER.PRODUCT_ID,
+QUANTITY,
+sum_qty
+
+FROM CUSTOMER_ORDER INNER JOIN total_ordered
 
 ON CUSTOMER_ORDER.CUSTOMER_ID = total_ordered.CUSTOMER_ID
 AND CUSTOMER_ORDER.PRODUCT_ID = total_ordered.PRODUCT_ID
@@ -931,6 +978,24 @@ WHERE ORDER_DATE BETWEEN '2017-03-01' AND '2017-03-31'
 ORDER BY CUSTOMER_ORDER_ID
 ```
 
+You can also mix and match scopes which is difficult to do with derived tables.
+
+```sql
+SELECT CUSTOMER_ORDER_ID,
+CUSTOMER_ID,
+ORDER_DATE,
+PRODUCT_ID,
+QUANTITY,
+MIN(QUANTITY) OVER(PARTITION BY PRODUCT_ID, CUSTOMER_ID) as MIN_PRODUCT_CUSTOMER_QTY_ORDERED,
+MIN(QUANTITY) OVER(PARTITION BY PRODUCT_ID) as MIN_PRODUCT_QTY_ORDERED,
+MIN(QUANTITY) OVER(PARTITION BY CUSTOMER_ID) as MIN_CUSTOMER_QTY_ORDERED
+
+
+FROM CUSTOMER_ORDER
+
+WHERE ORDER_DATE BETWEEN '2017-03-01' AND '2017-03-31'
+```
+
 When you are declaring your window redundantly, you can reuse it using a `WINDOW` declaration, which goes between the `WHERE` and the `ORDER BY`.
 
 ```sql
@@ -1088,18 +1153,16 @@ ORDER BY ORDER_DATE
 
 ## 5.4 Rolling Windows
 
-You can also use movable windows to create moving aggregations. For instance, you can create a six-day rolling average (3 days before, 3 days after).
+You can also use movable windows to create moving aggregations. For instance, you can create a six-row rolling average (3 rows before, 3 rows after).
 
-Note that PostgreSQL does not support this but MySQL, Teradata, and a few other platforms do.
 
 ```sql
-
 SELECT CUSTOMER_ORDER_ID,
 CUSTOMER_ID,
 ORDER_DATE,
 PRODUCT_ID,
 QUANTITY,
-AVG(QUANTITY) OVER (ORDER BY ORDER_DATE RANGE BETWEEN 3 PRECEDING AND 3 FOLLOWING) AS SIX_DAY_WINDOW_AVG
+AVG(QUANTITY) OVER (ORDER BY ORDER_DATE ROWS BETWEEN 3 PRECEDING AND 3 FOLLOWING)
 
 FROM CUSTOMER_ORDER
 
