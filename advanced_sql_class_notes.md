@@ -1,3 +1,7 @@
+This is the accompanying class "notes" for the [O'Reilly Online Training _Intermediate SQL for Data Analysis_](
+https://learning.oreilly.com/live-training/courses/intermediate-sql-for-data-analysis/0636920227267/
+). 
+
 
 # Section I - Setup
 
