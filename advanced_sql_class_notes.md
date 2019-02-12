@@ -1,9 +1,9 @@
 
-[](https://d3ucjech6zwjp8.cloudfront.net/360x240/orm_logo_1400pxx950px_center-3a39f4f979a573665fd0b8e348b5d359.png) 
+![](https://d3ucjech6zwjp8.cloudfront.net/360x240/orm_logo_1400pxx950px_center-3a39f4f979a573665fd0b8e348b5d359.png) 
 
 
 This is the accompanying class "notes" for the [O'Reilly Online Training _Intermediate SQL for Data Analysis_](
-https://learning.oreilly.com/live-training/courses/intermediate-sql-for-data-analysis/0636920227267/
+https://www.bbb.org/ProfileImages/add104aa-1007-46fb-bace-5d6d45775093.png
 ). 
 
 
