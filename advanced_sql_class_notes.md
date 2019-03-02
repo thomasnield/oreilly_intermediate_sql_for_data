@@ -229,7 +229,7 @@ Note that `GROUP_CONCAT` is used in MySQL and SQLite, but is often called `STRIN
 
 ## Exercise 1
 
-Bring in all records for `CUSTOMER_ORDER`, but also bring in the minimum and maximum quantities ever ordered each given `PRODUCT_ID` and `CUSTOMER_ID`.
+Bring in all records for `CUSTOMER_ORDER`, but also bring in the total quantities ever ordered each given `PRODUCT_ID` and `CUSTOMER_ID`.
 
 **ANSWER:**
 
@@ -899,7 +899,7 @@ For every `CALENDAR_DATE` and `CUSTOMER_ID`, show the total `QUANTITY` ordered f
 ```sql
 SELECT CALENDAR_DATE,
 all_combos.CUSTOMER_ID,
-TOTAL_QTY
+coalesce(TOTAL_QTY, 0) AS TOTAL_QTY
 
 FROM
 (
@@ -924,6 +924,8 @@ LEFT JOIN
 
 ON all_combos.CALENDAR_DATE = totals.ORDER_DATE
 AND all_combos.CUSTOMER_ID = totals.CUSTOMER_ID
+
+ORDER BY CALENDAR_DATE, all_combos.CUSTOMER_ID
 ```
 
 
@@ -1280,11 +1282,11 @@ db <- dbConnect(SQLite(), dbname='thunderbird_manufacturing.db')
 
 myQuery <- dbSendQuery(db, "SELECT * FROM CUSTOMER")
 
-my_data <- dbFetch(myQuery, n = -1)
+myData <- dbFetch(myQuery, n = -1)
 
 dbClearResult(myQuery)
 
-print(my_data)
+print(myData)
 
 remove(myQuery)
 dbDisconnect(db)
