@@ -79,9 +79,9 @@ A more efficient way to bring in averages by CUSTOMER_ID and PRODUCT_ID is by de
 
 ```sql
 SELECT CUSTOMER_ORDER_ID,
-CUSTOMER_ID,
+CUSTOMER_ORDER.CUSTOMER_ID,
 ORDER_DATE,
-PRODUCT_ID,
+CUSTOMER_ORDER.PRODUCT_ID,
 QUANTITY,
 cust_avgs.avg_qty
 
@@ -209,7 +209,7 @@ group_concat(PRODUCT_ID) as product_ids_ordered
 
 FROM CUSTOMER_ORDER
 WHERE ORDER_DATE BETWEEN '2017-02-01' AND '2017-02-28'
-GROUP BY 1
+GROUP BY ORDER_DATE
 ```
 
 Putting the DISTINCT keyword inside of it will only concatenate the DISTINCT product ID's.
@@ -220,7 +220,7 @@ group_concat(DISTINCT PRODUCT_ID) as product_ids_ordered
 
 FROM CUSTOMER_ORDER
 WHERE ORDER_DATE BETWEEN '2017-02-01' AND '2017-02-28'
-GROUP BY 1
+GROUP BY ORDER_DATE
 ```
 
 GROUP_CONCAT is a helpful function to compress the results into a single record, in a single cell, often in a reporting context.
@@ -571,6 +571,7 @@ Left-joining to the temporary table and qualifying on the regular expressions fo
 
 ```sql
 SELECT CUSTOMER_ORDER.*,
+PRICE,
 DISCOUNT_RATE,
 PRICE * (1 - DISCOUNT_RATE) AS DISCOUNTED_PRICE
 
@@ -593,12 +594,11 @@ WHERE ORDER_DATE BETWEEN '2017-03-26' AND '2017-03-31'
 If you expect records to possibly get multiple discounts, then sum the discounts and `GROUP BY` everything else:
 
 ```sql
-
 SELECT CUSTOMER_ORDER_ID,
 CUSTOMER_NAME,
 STATE,
 ORDER_DATE,
-PRODUCT_ID,
+CUSTOMER_ORDER.PRODUCT_ID,
 PRODUCT_NAME,
 PRODUCT_GROUP
 QUANTITY,
@@ -868,6 +868,41 @@ AND all_combos.PRODUCT_ID = totals.PRODUCT_ID
 ORDER BY CALENDAR_DATE, all_combos.PRODUCT_ID
 ```
 
+Note you can also use common table expressions:
+
+```sql
+WITH all_combos AS (
+  SELECT
+  CALENDAR_DATE,
+  PRODUCT_ID
+  FROM PRODUCT
+  CROSS JOIN CALENDAR
+  WHERE CALENDAR_DATE BETWEEN '2017-01-01' and '2017-03-31'
+),
+
+totals AS (
+  SELECT ORDER_DATE,
+  PRODUCT_ID,
+  SUM(QUANTITY) as TOTAL_QTY
+
+  FROM CUSTOMER_ORDER
+
+  GROUP BY 1, 2
+)
+
+
+SELECT CALENDAR_DATE,
+all_combos.PRODUCT_ID,
+TOTAL_QTY
+
+FROM all_combos LEFT JOIN totals
+
+ON all_combos.CALENDAR_DATE = totals.ORDER_DATE
+AND all_combos.PRODUCT_ID = totals.PRODUCT_ID
+
+ORDER BY CALENDAR_DATE, all_combos.PRODUCT_ID
+```
+
 
 ## 4.7 Comparative Joins
 
@@ -928,7 +963,40 @@ AND all_combos.CUSTOMER_ID = totals.CUSTOMER_ID
 ORDER BY CALENDAR_DATE, all_combos.CUSTOMER_ID
 ```
 
+Using Common Table Expressions:
 
+```sql
+
+WITH all_combos AS (
+  SELECT
+  CALENDAR_DATE,
+  CUSTOMER_ID
+  FROM CUSTOMER
+  CROSS JOIN CALENDAR
+  WHERE CALENDAR_DATE BETWEEN '2017-01-01' and '2017-03-31'
+),
+
+totals AS (
+  SELECT ORDER_DATE,
+  CUSTOMER_ID,
+  SUM(QUANTITY) as TOTAL_QTY
+
+  FROM CUSTOMER_ORDER
+
+  GROUP BY 1, 2
+)
+
+SELECT CALENDAR_DATE,
+all_combos.CUSTOMER_ID,
+coalesce(TOTAL_QTY, 0) AS TOTAL_QTY
+
+from all_combos LEFT JOIN totals
+
+ON all_combos.CALENDAR_DATE = totals.ORDER_DATE
+AND all_combos.CUSTOMER_ID = totals.CUSTOMER_ID
+
+ORDER BY CALENDAR_DATE, all_combos.CUSTOMER_ID
+```
 
 # Section V - Windowing
 
