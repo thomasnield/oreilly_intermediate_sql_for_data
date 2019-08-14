@@ -15,7 +15,7 @@ SQLiteStudio can be downloaded from its website:
 https://sqlitestudio.pl/index.rvt?act=download
 
 The files for this class can be downloaded here:
-https://github.com/thomasnield/oreilly_advanced_sql_for_data
+https://github.com/thomasnield/oreilly_intermediate_sql_for_data
 
 Import the "thunderbird_manufacturing.db" database file, which we will be using for almost all of the examples. 
 
@@ -1002,14 +1002,6 @@ ORDER BY CALENDAR_DATE, all_combos.CUSTOMER_ID
 
 Windowing functions allow you to greater contextual aggregations in ways much more flexible than GROUP BY. Many major database platforms support windowing functions.
 
-
-Since SQLite does not support windowing functions, we are going to use [PostgreSQL](https://www.postgresql.org/). While PostgreSQL is free and open-source, there are a few steps in getting it set up. Therefore to save time we are going to use Rextester, a web-based client that can run PostgreSQL queries.
-
-http://rextester.com/l/postgresql_online_compiler
-
-In the resources for this class, you should find a "customer_order.sql" file which can be opened with any text editor. Inside you will see some SQL commands to create and populate a `CUSTOMER_ORDER` table and then SELECT all the records from it. Copy/Paste the contents to Rextester and the click the "Run it (F8)" button.
-
-Notice it will create the table and populate it, and the final SELECT query will execute and display the results. Note that the table is not persisted after the operation finishes, so you will need to precede each SELECT exercise with this table creation and population before your SELECT.
 
 ## 5.1 PARTITION BY
 
