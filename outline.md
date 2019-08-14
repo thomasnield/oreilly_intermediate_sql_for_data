@@ -1,5 +1,5 @@
 
-# O'Reilly Advanced SQL for Data Analysis
+# O'Reilly Intermediate SQL for Data Analysis
 
 I. Getting started, installing SQLiteStudio (10 minutes)
 
