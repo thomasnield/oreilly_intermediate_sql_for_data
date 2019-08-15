@@ -15,7 +15,7 @@ SQLiteStudio can be downloaded from its website:
 https://sqlitestudio.pl/index.rvt?act=download
 
 The files for this class can be downloaded here:
-https://github.com/thomasnield/oreilly_advanced_sql_for_data
+https://github.com/thomasnield/oreilly_intermediate_sql_for_data
 
 Import the "thunderbird_manufacturing.db" database file, which we will be using for almost all of the examples. 
 
@@ -1004,6 +1004,7 @@ Windowing functions allow you to greater contextual aggregations in ways much mo
 
 
 ## 5.1 PARTITION BY
+<<<<<<< HEAD:advanced_sql_class_notes.md
 
 Sometimes it can be helpful to create a contextual aggregation for each record in a query. Windowing functions can make this much easier and save us a lot of subquery work.
 
@@ -1018,6 +1019,8 @@ QUANTITY,
 AVG(QUANTITY) OVER(PARTITION BY PRODUCT_ID, CUSTOMER_ID) as AVG_PRODUCT_QTY_ORDERED
 
 FROM CUSTOMER_ORDER
+=======
+>>>>>>> 05bf45eab3e96a183ea15cd85ae37b0758bf0ed4:intermediate_sql_class_notes.md
 
 WHERE ORDER_DATE BETWEEN '2017-03-01' AND '2017-03-31'
 
