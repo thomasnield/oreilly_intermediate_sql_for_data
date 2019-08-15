@@ -1003,20 +1003,28 @@ ORDER BY CALENDAR_DATE, all_combos.CUSTOMER_ID
 Windowing functions allow you to greater contextual aggregations in ways much more flexible than GROUP BY. Many major database platforms support windowing functions.
 
 
-Since SQLite does not support windowing functions, we are going to use [PostgreSQL](https://www.postgresql.org/). While PostgreSQL is free and open-source, there are a few steps in getting it set up. Therefore to save time we are going to use Rextester, a web-based client that can run PostgreSQL queries.
-
-http://rextester.com/l/postgresql_online_compiler
-
-In the resources for this class, you should find a "customer_order.sql" file which can be opened with any text editor. Inside you will see some SQL commands to create and populate a `CUSTOMER_ORDER` table and then SELECT all the records from it. Copy/Paste the contents to Rextester and the click the "Run it (F8)" button.
-
-Notice it will create the table and populate it, and the final SELECT query will execute and display the results. Note that the table is not persisted after the operation finishes, so you will need to precede each SELECT exercise with this table creation and population before your SELECT.
-
 ## 5.1 PARTITION BY
 
 Sometimes it can be helpful to create a contextual aggregation for each record in a query. Windowing functions can make this much easier and save us a lot of subquery work.
 
-For instance, it may be helpful to not only get each CUSTOMER_ORDER for the month of MARCH, but also the maximum quantity that customer purchased for that `PRODUCT_ID`. We can do that with an ` OVER PARTITION BY` combined with the `MAX()` function.
+For instance, it may be helpful to not only get each CUSTOMER_ORDER for the month of MARCH, but also the average quantity that customer purchased for that `PRODUCT_ID`. We can do that with an ` OVER PARTITION BY` combined with the `AVG()` function. We have done this operation with derived tables and common table expressions in the past, but now we can do it in a one-line window function!
 
+```sql
+SELECT CUSTOMER_ORDER_ID,
+CUSTOMER_ID,
+ORDER_DATE,
+PRODUCT_ID,
+QUANTITY,
+AVG(QUANTITY) OVER(PARTITION BY PRODUCT_ID, CUSTOMER_ID) as AVG_PRODUCT_QTY_ORDERED
+
+FROM CUSTOMER_ORDER
+
+WHERE ORDER_DATE BETWEEN '2017-03-01' AND '2017-03-31'
+
+ORDER BY CUSTOMER_ORDER_ID
+```
+
+Here is the maximum quantity for shared customers and products:
 
 ```sql
 
@@ -1348,15 +1356,15 @@ library(RSQLite)
 
 db <- dbConnect(SQLite(), dbname='thunderbird_manufacturing.db')
 
-myQuery <- dbSendQuery(db, "SELECT * FROM CUSTOMER")
+my_query <- dbSendQuery(db, "SELECT * FROM CUSTOMER")
 
-myData <- dbFetch(myQuery, n = -1)
+my_data <- dbFetch(my_query, n = -1)
 
-dbClearResult(myQuery)
+dbClearResult(my_query)
 
-print(myData)
+print(my_data)
 
-remove(myQuery)
+remove(my_query)
 dbDisconnect(db)
 ```
 
@@ -1405,7 +1413,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-public class Launcher {
+public class JavaLauncher {
 
     public static void main(String[] args) {
 
@@ -1447,7 +1455,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class Launcher {
+public class JavaLauncher {
 
     public static void main(String[] args) {
 
@@ -1493,7 +1501,7 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
-public class Launcher {
+public class JavaLauncher {
 
     public static void main(String[] args) {
 
