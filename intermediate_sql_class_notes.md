@@ -1318,7 +1318,7 @@ def get_all_customers():
 print(get_all_customers())
 ```
 
-## 6-1C Using SQL with Python
+## 6.1C Using SQL with Python
 
 
 If you want to pass parameters to a query, mind to not insert parameters directly so you don't accidentally introduce SQL injection. Below, we create a helper function that retrieves a customer for a given ID from a database.
@@ -1343,7 +1343,18 @@ def customer_for_id(customer_id):
 print(customer_for_id(3))
 ```
 
-You can also use these functions to update data.
+## 6.1D Using SQL with Pandas
+
+Using SQL with Pandas is pretty straightforward. Use Pandas' `read_sql_query()` function to query from a `connection` object and turn it into a `DataFrame`.
+
+```python 
+import pandas as pd
+import sqlite3
+
+conn = sqlite3.connect('thunderbird_manufacturing.db')
+data_frame_from_sql = pd.read_sql_query("SELECT * FROM OPTIMIZED_BLOCK", conn)
+print(data_frame_from_sql)
+```
 
 
 
