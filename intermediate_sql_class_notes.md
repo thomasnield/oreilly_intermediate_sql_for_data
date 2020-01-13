@@ -145,6 +145,15 @@ SELECT * FROM  TX_ORDERS INNER JOIN TX_CUSTOMERS
 ON TX_ORDERS.CUSTOMER_ID = TX_CUSTOMERS.CUSTOMER_ID
 ```
 
+## Conditional Subqueries
+
+
+
+```sql 
+SELECT * FROM CUSTOMER c 
+WHERE EXISTS (SELECT * FROM CUSTOMER_ORDER WHERE CUSTOMER_ID = c.CUSTOMER_ID)
+```
+
 ## 2.5 - Unions
 
 To simply append two queries (with identical fields) together, put a `UNION ALL` between them.
@@ -1004,7 +1013,7 @@ Windowing functions allow you to greater contextual aggregations in ways much mo
 
 
 ## 5.1 PARTITION BY
-<<<<<<< HEAD:advanced_sql_class_notes.md
+
 
 Sometimes it can be helpful to create a contextual aggregation for each record in a query. Windowing functions can make this much easier and save us a lot of subquery work.
 
@@ -1019,8 +1028,6 @@ QUANTITY,
 AVG(QUANTITY) OVER(PARTITION BY PRODUCT_ID, CUSTOMER_ID) as AVG_PRODUCT_QTY_ORDERED
 
 FROM CUSTOMER_ORDER
-=======
->>>>>>> 05bf45eab3e96a183ea15cd85ae37b0758bf0ed4:intermediate_sql_class_notes.md
 
 WHERE ORDER_DATE BETWEEN '2017-03-01' AND '2017-03-31'
 
@@ -1352,7 +1359,7 @@ import pandas as pd
 import sqlite3
 
 conn = sqlite3.connect('thunderbird_manufacturing.db')
-data_frame_from_sql = pd.read_sql_query("SELECT * FROM OPTIMIZED_BLOCK", conn)
+data_frame_from_sql = pd.read_sql_query("SELECT * FROM CUSTOMER", conn)
 print(data_frame_from_sql)
 ```
 
