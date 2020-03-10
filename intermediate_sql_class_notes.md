@@ -795,6 +795,48 @@ WITH RECURSIVE my_integers(x) AS (
 SELECT * FROM my_integers
 ```
 
+Generating integers can also be be helpful to "repeat-and-modify" records in a given table. For example, if we have a table of air travel bookings where each booking can have "x" number of passengers (such as 3 passengers), we can break up that booking into individual bookings for each passenger (create 3 records off of 1). 
+
+```sql 
+WITH RECURSIVE repeat_helper(x) AS (
+    SELECT 1
+        UNION ALL
+    SELECT x + 1 
+    FROM repeat_helper
+    WHERE x < 1000
+)
+
+SELECT BOOKING_ID, 
+BOOKED_EMPLOYEE_ID,
+DEPARTURE_DATE,
+ORIGIN,
+DESTINATION,
+FARE_PRICE,
+repeat_helper.x AS PASSENGER_NUMBER
+FROM EMPLOYEE_AIR_TRAVEL CROSS JOIN repeat_helper
+ON repeat_helper.x <= NUM_OF_PASSENGERS
+```
+
+You can also use some clever `CASE` expression logic with an integer generater to find total costs of sending employees to each airport. 
+
+```sql
+WITH RECURSIVE repeat_helper(x) AS (
+    SELECT 1
+        UNION ALL
+    SELECT x + 1 
+    FROM repeat_helper
+    WHERE x < 1000
+)
+
+SELECT
+CASE WHEN repeat_helper.x == 1 THEN ORIGIN ELSE DESTINATION END AS AIRPORT,
+SUM(FARE_PRICE * NUM_OF_PASSENGERS) AS AIRPORT_REVENUE
+FROM EMPLOYEE_AIR_TRAVEL CROSS JOIN repeat_helper
+ON repeat_helper.x <= 2
+GROUP BY AIRPORT
+```
+
+
 You can apply the same concept to generate a set of chronological dates. This recursive query will generate all dates from today to '2030-12-31':
 
 ```sql
