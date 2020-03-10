@@ -793,7 +793,7 @@ WITH RECURSIVE my_integers(x) AS (
 SELECT * FROM my_integers
 ```
 
-Generating integers can also be be helpful to "repeat-and-modify" records in a given table. For example, if we have a table of air travel bookings where each booking can have "x" number of passengers (such as 3 passengers). 
+Generating integers can also be be helpful to "repeat-and-modify" records in a given table. For example, say we have a table of air travel bookings where each booking can have "x" number of passengers (such as 3 passengers). 
 
 | BOOKING_ID | BOOKED_EMPLOYEE_ID | DEPARTURE_DATE | ORIGIN | DESTINATION | FARE_PRICE | NUM_OF_PASSENGERS | RETURN_BOOKING_ID |
 |------------|--------------------|----------------|--------|-------------|------------|-------------------|-------------------|
@@ -850,7 +850,7 @@ ON repeat_helper.x <= NUM_OF_PASSENGERS
 | 6          | 1                  | 2017-03-27     | LAX    | DFW         | 190        | 1                |
 | 7          | 5                  | 2017-03-27     | DFW    | ORD         | 210        | 1                |
 
-You can also use some clever `CASE` expression logic with an integer generater to find total costs of sending employees to each airport. 
+You can also use some clever `CASE` expression logic with an integer generator to find total costs of sending employees to each airport. 
 
 ```sql
 WITH RECURSIVE repeat_helper(x) AS (
