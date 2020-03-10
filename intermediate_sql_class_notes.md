@@ -1,6 +1,4 @@
 
-![](https://d3ucjech6zwjp8.cloudfront.net/360x240/orm_logo_1400pxx950px_center-3a39f4f979a573665fd0b8e348b5d359.png) 
-
 
 This is the accompanying class "notes" for the [O'Reilly Online Training _Intermediate SQL for Data Analysis_](
 https://www.bbb.org/ProfileImages/add104aa-1007-46fb-bace-5d6d45775093.png
@@ -817,6 +815,25 @@ FROM EMPLOYEE_AIR_TRAVEL CROSS JOIN repeat_helper
 ON repeat_helper.x <= NUM_OF_PASSENGERS
 ```
 
+**OUTPUT:**
+
+
+| BOOKING_ID | BOOKED_EMPLOYEE_ID | DEPARTURE_DATE | ORIGIN | DESTINATION | FARE_PRICE | PASSENGER_NUMBER |
+|------------|--------------------|----------------|--------|-------------|------------|------------------|
+| 1          | 6                  | 2017-03-01     | DFW    | ORD         | 170        | 1                |
+| 1          | 6                  | 2017-03-01     | DFW    | ORD         | 170        | 2                |
+| 2          | 6                  | 2017-03-04     | ORD    | DFW         | 160        | 1                |
+| 2          | 6                  | 2017-03-04     | ORD    | DFW         | 160        | 2                |
+| 3          | 19                 | 2017-03-21     | DFW    | JFK         | 210        | 1                |
+| 3          | 19                 | 2017-03-21     | DFW    | JFK         | 210        | 2                |
+| 3          | 19                 | 2017-03-21     | DFW    | JFK         | 210        | 3                |
+| 4          | 19                 | 2017-03-24     | JFK    | DFW         | 220        | 1                |
+| 4          | 19                 | 2017-03-24     | JFK    | DFW         | 220        | 2                |
+| 4          | 19                 | 2017-03-24     | JFK    | DFW         | 220        | 3                |
+| 5          | 1                  | 2017-03-26     | DFW    | LAX         | 180        | 1                |
+| 6          | 1                  | 2017-03-27     | LAX    | DFW         | 190        | 1                |
+| 7          | 5                  | 2017-03-27     | DFW    | ORD         | 210        | 1                |
+
 You can also use some clever `CASE` expression logic with an integer generater to find total costs of sending employees to each airport. 
 
 ```sql
@@ -835,6 +852,16 @@ FROM EMPLOYEE_AIR_TRAVEL CROSS JOIN repeat_helper
 ON repeat_helper.x <= 2
 GROUP BY AIRPORT
 ```
+
+**OUTPUT:**
+
+| AIRPORT | AIRPORT_REVENUE |
+|---------|-----------------|
+| DFW     | 4840            |
+| JFK     | 1290            |
+| LAX     | 740             |
+| ORD     | 1460            |
+| SFO     | 1350            |
 
 
 You can apply the same concept to generate a set of chronological dates. This recursive query will generate all dates from today to '2030-12-31':
