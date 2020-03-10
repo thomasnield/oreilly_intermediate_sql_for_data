@@ -793,7 +793,24 @@ WITH RECURSIVE my_integers(x) AS (
 SELECT * FROM my_integers
 ```
 
-Generating integers can also be be helpful to "repeat-and-modify" records in a given table. For example, if we have a table of air travel bookings where each booking can have "x" number of passengers (such as 3 passengers), we can break up that booking into individual bookings for each passenger (create 3 records off of 1). 
+Generating integers can also be be helpful to "repeat-and-modify" records in a given table. For example, if we have a table of air travel bookings where each booking can have "x" number of passengers (such as 3 passengers). 
+
+| BOOKING_ID | BOOKED_EMPLOYEE_ID | DEPARTURE_DATE | ORIGIN | DESTINATION | FARE_PRICE | NUM_OF_PASSENGERS | RETURN_BOOKING_ID |
+|------------|--------------------|----------------|--------|-------------|------------|-------------------|-------------------|
+| 1          | 6                  | 2017-03-01     | DFW    | ORD         | 170        | 2                 | 2                 |
+| 2          | 6                  | 2017-03-04     | ORD    | DFW         | 160        | 2                 |                   |
+| 3          | 19                 | 2017-03-21     | DFW    | JFK         | 210        | 3                 | 4                 |
+| 4          | 19                 | 2017-03-24     | JFK    | DFW         | 220        | 3                 |                   |
+| 5          | 1                  | 2017-03-26     | DFW    | LAX         | 180        | 1                 | 6                 |
+| 6          | 1                  | 2017-03-27     | LAX    | DFW         | 190        | 1                 |                   |
+| 7          | 5                  | 2017-03-27     | DFW    | ORD         | 210        | 2                 | 8                 |
+| 8          | 5                  | 2017-03-29     | ORD    | DFW         | 190        | 2                 |                   |
+| 9          | 9                  | 2017-03-28     | DFW    | SFO         | 220        | 3                 | 10                |
+| 10         | 9                  | 2017-03-28     | SFO    | DFW         | 230        | 3                 |                   |
+| 11         | 31                 | 2017-04-01     | DFW    | LAX         | 190        | 1                 | 12                |
+| 12         | 31                 | 2017-04-05     | LAX    | DFW         | 180        | 1                 |                   |
+
+We can break up each booking into individual bookings for each passenger (e.g create 3 records off of a booking with 3 passengers). 
 
 ```sql 
 WITH RECURSIVE repeat_helper(x) AS (
