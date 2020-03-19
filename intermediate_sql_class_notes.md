@@ -793,7 +793,7 @@ WITH RECURSIVE my_integers(x) AS (
 SELECT * FROM my_integers
 ```
 
-Generating integers can also be be helpful to "repeat-and-modify" records in a given table. For example, if we have a table of air travel bookings where each booking can have "x" number of passengers (such as 3 passengers). 
+Generating integers can also be be helpful to "repeat-and-modify" records in a given table. For example, say we have a table of air travel bookings where each booking can have "x" number of passengers (such as 3 passengers). 
 
 | BOOKING_ID | BOOKED_EMPLOYEE_ID | DEPARTURE_DATE | ORIGIN | DESTINATION | FARE_PRICE | NUM_OF_PASSENGERS | RETURN_BOOKING_ID |
 |------------|--------------------|----------------|--------|-------------|------------|-------------------|-------------------|
@@ -850,7 +850,7 @@ ON repeat_helper.x <= NUM_OF_PASSENGERS
 | 6          | 1                  | 2017-03-27     | LAX    | DFW         | 190        | 1                |
 | 7          | 5                  | 2017-03-27     | DFW    | ORD         | 210        | 1                |
 
-You can also use some clever `CASE` expression logic with an integer generater to find total costs of sending employees to each airport. 
+You can also use some clever `CASE` expression logic with an integer generator to find total costs of sending employees to each airport. 
 
 ```sql
 WITH RECURSIVE repeat_helper(x) AS (
@@ -1349,6 +1349,38 @@ WHERE ORDER_DATE BETWEEN '2017-03-01' AND '2017-03-31'
 
 ORDER BY CUSTOMER_ORDER_ID
 ```
+
+## 5.4 LEAD and LAG
+
+Two highly useful windowing functions are `LEAD()` and `LAG()`, which retrieves the previous or next value within a defined window. 
+
+For example, to simply retrive the previous quantity ordered in a table by `ORDER_DATE`, we can use the `LAG()` function like this. 
+
+```sql 
+SELECT *,
+LAG (QUANTITY, 1, 0) OVER (ORDER BY ORDER_DATE) AS PREV_QTY
+FROM CUSTOMER_ORDER 
+```
+
+`LAG()` will retrieve the quantity of the next record on that ordering. 
+
+```sql 
+SELECT *,
+LEAD (QUANTITY, 1, 0) OVER (ORDER BY ORDER_DATE) AS NEXT_QTY
+
+FROM CUSTOMER_ORDER 
+```
+
+You can also use `LEAD()` and `LAG()` with a `PARTIION BY`, making it possible to silo the previous quantity only within records that share each given record's `PRODUCT_ID` and `CUSTOMER_ID`. 
+
+```sql 
+SELECT *,
+LAG (QUANTITY, 1, 0) OVER (PARTITION BY PRODUCT_ID, CUSTOMER_ID ORDER BY ORDER_DATE) AS NEXT_QTY
+
+FROM CUSTOMER_ORDER 
+
+ORDER BY CUSTOMER_ORDER_ID
+``` 
 
 
 # EXERCISE
