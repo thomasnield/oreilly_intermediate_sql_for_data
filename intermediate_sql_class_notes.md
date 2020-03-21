@@ -146,11 +146,12 @@ ON TX_ORDERS.CUSTOMER_ID = TX_CUSTOMERS.CUSTOMER_ID
 ## Conditional Subqueries
 
 
-
 ```sql 
 SELECT * FROM CUSTOMER c 
 WHERE EXISTS (SELECT * FROM CUSTOMER_ORDER WHERE CUSTOMER_ID = c.CUSTOMER_ID)
 ```
+
+
 
 ## 2.5 - Unions
 
@@ -1381,6 +1382,29 @@ FROM CUSTOMER_ORDER
 
 ORDER BY CUSTOMER_ORDER_ID
 ``` 
+
+# 5.5 Ranking with ROW_NUMBER()
+
+The `ROW_NUMBER()` function can be highly helpful with windowing functions to rank items. 
+
+For example, say I wanted to get the top 3 selling PRODUCTs by CUSTOMER. I can use a `ROW_NUMBER()` function to assign a ranking number to each sorted quantity by `CUSTOMER_ID` and `PRODUCT_ID`. Then I can filter for only the first three items. 
+
+
+```sql 
+WITH TOTAL_QTYS AS (
+  SELECT CUSTOMER_ID, PRODUCT_ID, SUM(QUANTITY) AS TOTAL_QTY 
+  FROM CUSTOMER_ORDER 
+  GROUP BY 1,2
+),
+
+PRODUCT_SALES_BY_CUSTOMER AS (
+   SELECT CUSTOMER_ID, PRODUCT_ID, TOTAL_QTY,
+   ROW_NUMBER() OVER (PARTITION BY CUSTOMER_ID ORDER BY TOTAL_QTY DESC) AS RANKING
+   FROM TOTAL_QTYS
+) 
+SELECT * FROM PRODUCT_SALES_BY_CUSTOMER 
+WHERE RANKING <= 3
+````
 
 
 # EXERCISE
