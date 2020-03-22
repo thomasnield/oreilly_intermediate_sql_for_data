@@ -1406,22 +1406,7 @@ SELECT * FROM PRODUCT_SALES_BY_CUSTOMER
 WHERE RANKING <= 3
 ```
 
-Note if you want identical values to receive the same ranking, use the `rank()` function instead of `row_number()`. 
-
-```sql 
-WITH TOTAL_QTYS AS (
-  SELECT CUSTOMER_ID, PRODUCT_ID, SUM(QUANTITY) AS TOTAL_QTY 
-  FROM CUSTOMER_ORDER 
-  GROUP BY 1,2
-),
-
-PRODUCT_SALES_BY_CUSTOMER AS (
-   SELECT CUSTOMER_ID, PRODUCT_ID, TOTAL_QTY,
-   RANK() OVER (PARTITION BY CUSTOMER_ID ORDER BY TOTAL_QTY DESC) AS RANKING
-   FROM TOTAL_QTYS
-) 
-SELECT * FROM PRODUCT_SALES_BY_CUSTOMER 
-WHERE RANKING <= 3
+Note if you want identical values to receive the same ranking, use the `RANK()` function instead of `row_number()`. Use `DENSE_RANK()` if you want to force the values to be consecutive rather than dupes causing ranks to be skipped. 
 
 
 # EXERCISE
