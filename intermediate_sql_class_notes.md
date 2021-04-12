@@ -478,6 +478,15 @@ SELECT 'ALPHA' REGEXP '^(FOXTROT|ZULU|ALPHA|TANGO)$' --true
 
 ## 3.7 Using Regular Expressions in queries
 
+Find all customers with an address ending in "Blvd" or "St":
+
+```sql
+SELECT * FROM CUSTOMER
+WHERE ADDRESS REGEXP '.*(Blvd|St)$'
+
+
+## EXERCISE
+
 Find all customers with a 3-4 digit street number. Note the literal space before the wildcard `.*`:
 
 ```sql
@@ -485,14 +494,6 @@ SELECT * FROM CUSTOMER
 WHERE ADDRESS REGEXP '^[0-9]{3,4} .*$'
 ```
 
-
-## EXERCISE
-
-Find all customers with an address ending in "Blvd" or "St":
-
-```sql
-SELECT * FROM CUSTOMER
-WHERE ADDRESS REGEXP '.*(Blvd|St)$'
 ```
 # Section IV - Advanced Joins and Temporary Tables
 
@@ -1376,7 +1377,7 @@ You can also use `LEAD()` and `LAG()` with a `PARTIION BY`, making it possible t
 
 ```sql 
 SELECT *,
-LAG (QUANTITY, 1, 0) OVER (PARTITION BY PRODUCT_ID, CUSTOMER_ID ORDER BY ORDER_DATE) AS NEXT_QTY
+LAG (QUANTITY, 1, 0) OVER (PARTITION BY PRODUCT_ID, CUSTOMER_ID ORDER BY ORDER_DATE) AS PREV_QTY
 
 FROM CUSTOMER_ORDER 
 
@@ -1581,7 +1582,7 @@ public class JavaLauncher {
 
         try {
             HikariConfig config = new HikariConfig();
-            config.setJdbcUrl("jdbc:sqlite:/c:/git/oreilly_advanced_sql_for_data/thunderbird_manufacturing.db");
+            config.setJdbcUrl("jdbc:sqlite:/c:/git/oreilly_intermediate_sql_for_data/thunderbird_manufacturing.db");
             config.setMinimumIdle(1);
             config.setMaximumPoolSize(5);
 
@@ -1623,7 +1624,7 @@ public class JavaLauncher {
 
         try {
             HikariConfig config = new HikariConfig();
-            config.setJdbcUrl("jdbc:sqlite:/c:/git/oreilly_advanced_sql_for_data/thunderbird_manufacturing.db");
+            config.setJdbcUrl("jdbc:sqlite:/c:/git/oreilly_intermediate_sql_for_data/thunderbird_manufacturing.db");
             config.setMinimumIdle(1);
             config.setMaximumPoolSize(5);
 
@@ -1669,7 +1670,7 @@ public class JavaLauncher {
 
         try {
             HikariConfig config = new HikariConfig();
-            config.setJdbcUrl("jdbc:sqlite:/c:/git/oreilly_advanced_sql_for_data/thunderbird_manufacturing.db");
+            config.setJdbcUrl("jdbc:sqlite:/c:/git/oreilly_intermediate_sql_for_data/thunderbird_manufacturing.db");
             config.setMinimumIdle(1);
             config.setMaximumPoolSize(5);
 
