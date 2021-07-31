@@ -10,7 +10,7 @@ https://www.bbb.org/ProfileImages/add104aa-1007-46fb-bace-5d6d45775093.png
 To set up, you will need two things: SQLiteStudio and the files for this class (which you likely have already if you are reading this document).
 
 SQLiteStudio can be downloaded from its website:
-https://sqlitestudio.pl/index.rvt?act=download
+https://github.com/pawelsalawa/sqlitestudio/releases
 
 The files for this class can be downloaded here:
 https://github.com/thomasnield/oreilly_intermediate_sql_for_data
