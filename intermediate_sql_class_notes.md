@@ -49,7 +49,7 @@ WHERE CUSTOMER_ID IN (
 )
 ```
 
-## 2.2 - Aliasing Tables and Scalar Subquery Aggregation
+## 2.2 - Correlated Subqueries
 
 Retrieving the average of quantity by each record's CUSTOMER_ID and PRODUCT_ID
 
