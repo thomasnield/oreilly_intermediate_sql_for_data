@@ -295,9 +295,12 @@ Regular expressions are a powerful tool for qualifying complex text patterns. Th
 While regular expressions can be used to split and search text, we will primarily be using it to match text, much like wildcards.
 
 The REGEXP operator is used in SQLite for matching a text to a regex pattern. Like all boolean operations, it will return a `1` for true or `0` for false. 
-I also published an article with O'Reilly that covers regular expressions in a bit more depth here:
-https://www.oreilly.com/ideas/an-introduction-to-regular-expressions
 
+Here are some interactive training sessions on O'Reilly's platform to learn regular expressions. 
+https://bit.ly/2WD39NA
+
+There is also this short article teaching regular expressions on O'Reilly: 
+https://learning.oreilly.com/library/view/an-introduction-to/9781492082569/
 
 > Note carefully that the `REGEXP` operator is not [implemented by default with SQLite](https://stackoverflow.com/questions/5071601/how-do-i-use-regex-in-a-sqlite-query). SQLiteStudio does implement it for you, so it will work while using SQLiteStudio. However, if you use SQLite with Python, Java, or other programming platforms [you will have to implement it yourself](https://stackoverflow.com/questions/5365451/problem-with-regexp-python-and-sqlite).
 
