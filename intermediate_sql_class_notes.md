@@ -34,11 +34,11 @@ WHERE ORDER_DATE = (SELECT MAX(ORDER_DATE) FROM CUSTOMER_ORDER)
 Sometimes it can be helpful to leverage subqueries that return a set of values, rather than one scalar value. For instance, to query customer orders for customers in TX, we can save ourselves a join and use a subquery to get CUSTOMER_ID's that belong to customers in TX. Then we can leverage that with a WHERE and specify an `IN` condition:
 
 ```sql
-SELECT CUSTOMER_ORDER_ID,
+SELECT ORDER_ID,
 CUSTOMER_ID,
 ORDER_DATE,
 PRODUCT_ID,
-QUANTITY
+ORDER_QTY
 
 FROM CUSTOMER_ORDER
 
@@ -54,13 +54,13 @@ WHERE CUSTOMER_ID IN (
 Retrieving the average of quantity by each record's CUSTOMER_ID and PRODUCT_ID
 
 ```sql
-SELECT CUSTOMER_ORDER_ID,
+SELECT ORDER_ID,
 CUSTOMER_ID,
 ORDER_DATE,
 PRODUCT_ID,
-QUANTITY,
+ORDERR_QTY,
 (
-    SELECT AVG(QUANTITY)
+    SELECT AVG(ORDER_QTY)
     FROM CUSTOMER_ORDER c2
     WHERE c2.CUSTOMER_ID = c1.CUSTOMER_ID
     AND c2.PRODUCT_ID = c1.PRODUCT_ID
