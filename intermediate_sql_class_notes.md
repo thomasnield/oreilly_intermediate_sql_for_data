@@ -1,4 +1,4 @@
-
+##
 
 This is the accompanying class "notes" for the [O'Reilly Online Training _Intermediate SQL for Data Analysis_](
 https://www.bbb.org/ProfileImages/add104aa-1007-46fb-bace-5d6d45775093.png
